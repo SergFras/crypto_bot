@@ -461,7 +461,7 @@ def bot_start():
 		if checkCoinScam(message.text) == 'true':
 			msg = 'Предположительно не скам'
 		elif checkCoinScam(message.text) == 'Ошибка соединения!':
-			msg = 'Ошибка соединения с сервером'
+			msg = 'Ошибка'
 		else:
 			msg = 'Предположительно скам'
 

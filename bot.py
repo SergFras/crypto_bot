@@ -167,6 +167,7 @@ def bot_start():
 
 				for i in range(len(tfs)):
 					os.system(f'start python logic_times.py {tfs[i]} {minutes[i]} {precents[i]}')
+				await bot.send_message(message.from_user.id, 'Алгоритмы запущены!')
 			else:
 				await bot.send_message(message.from_user.id, access_denied)
 
@@ -192,6 +193,7 @@ def bot_start():
 				for j in getAllStat():
 					if j[3]:
 						os.system(f'start python logic.py {j[0]}')
+				await bot.send_message(message.from_user.id, 'Алгоритмы запущены!')
 			else:
 				await bot.send_message(message.from_user.id, access_denied)
 

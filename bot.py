@@ -83,7 +83,6 @@ async def getCoins(message, bot, value):
 
 	updateUnick(message.from_user.id, message.from_user.username)
 	await bot.send_message(message.from_user.id, msg)
-	await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} вызвал команду /coins</b>\n\n<i>Id: {message.from_user.id}</i>')
 
 
 async def getOptions(message, bot):

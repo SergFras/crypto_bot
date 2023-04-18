@@ -440,7 +440,7 @@ def bot_start():
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 
-	@dp.message_handler(commands=['scam', 'скам'])
+	@dp.message_handler(commands=['scam', 'скам', 'antiscam'])
 	async def scam_cmd(message: types.Message):
 		if getUserStat(message.from_user.id) is not None:
 			try:

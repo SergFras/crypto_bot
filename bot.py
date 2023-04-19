@@ -15,10 +15,19 @@ from modules.bybit import getPrice
 from modules.parse import checkCoinScam
 
 
+
+
 class createCase(StatesGroup):
 	coin = State()
 	price = State()
 	volume = State()
+
+
+class updateCase(StatesGroup):
+	coin = State()
+	price = State()
+	volume = State()
+
 
 
 class createScam(StatesGroup):
@@ -167,7 +176,7 @@ def bot_start():
 
 				for i in range(len(tfs)):
 					os.system(f'start python logic_times.py {tfs[i]} {minutes[i]} {precents[i]}')
-				await bot.send_message(message.from_user.id, 'Алгоритмы запущены!')
+				await bot.send_message(message.from_user.id, '<b>Алгоритмы запущены!</b>')
 			else:
 				await bot.send_message(message.from_user.id, access_denied)
 
@@ -193,7 +202,7 @@ def bot_start():
 				for j in getAllStat():
 					if j[3]:
 						os.system(f'start python logic.py {j[0]}')
-				await bot.send_message(message.from_user.id, 'Алгоритмы запущены!')
+				await bot.send_message(message.from_user.id, '<b>Алгоритмы запущены!</b>')
 			else:
 				await bot.send_message(message.from_user.id, access_denied)
 
@@ -484,6 +493,9 @@ def bot_start():
 				if arg == 'create':
 					await bot.send_message(message.from_user.id, '<b>Введите название торговой пары:</b>')
 					await createCase.coin.set()
+				elif arg == 'update':
+					await bot.send_message(message.from_user.id, '<b>Введите название торговой пары:</b>')
+					await updateCase.coin.set()
 				else:
 					if os.path.exists(f'allcases/{message.from_user.id}.txt'):
 						data, msg = [], '<b>Ваш портфель:</b>\n\n'
@@ -495,6 +507,8 @@ def bot_start():
 								data.append(list(i.split(' ')))
 						for i in data:
 							msg += f'<b>{i[0]}</b> - ${i[1]}<i>({i[2]})</i>\n'
+
+						await bot.send_message(message.from_user.id, '<b>Инструкция:</b>\n\n<code>/case create</code> - создать новый портфель\n<code>/case update</code> - добавить новые монеты\n\n<i>Нажмите, чтобы скопировать.</i>')
 						await bot.send_message(message.from_user.id, msg)
 					else:
 						await bot.send_message(message.from_user.id, '<b>Портфель еще не создан!</b>\n\n<b>Введите:</b> <code>/case create</code>\n<i>Нажмите, чтобы скопировать.</i>')
@@ -509,7 +523,7 @@ def bot_start():
 			return
 
 		async with state.proxy() as data:
-			data['coin'] = message.text
+			data['coin'] = message.text.upper()
 
 		await createCase.next()
 		await bot.send_message(message.from_user.id, '<b>Введите цену:</b>')
@@ -518,21 +532,77 @@ def bot_start():
 
 	@dp.message_handler(state=createCase.price)
 	async def input_volume(message: types.Message, state: FSMContext):
-		async with state.proxy() as data:
-			data['price'] = message.text
-		await createCase.next()
-		await bot.send_message(message.from_user.id, '<b>Введите кол-во:</b>')
-		await createCase.volume.set()
+		if message.text.isalpha():
+			await message.answer('<b>Цена должна быть числом!</b>')
+			return
+		else:
+			async with state.proxy() as data:
+				data['price'] = message.text
+
+			await createCase.next()
+			await bot.send_message(message.from_user.id, '<b>Введите кол-во:</b>')
+			await createCase.volume.set()
 
 
 	@dp.message_handler(state=createCase.volume)
 	async def input_price(message: types.Message, state: FSMContext):
 		async with state.proxy() as data:
-			with open(f'allcases/{message.from_user.id}.txt', 'w') as f:
-				f.write(f'{data["coin"]} {data["price"]} {message.text}')
+			if message.text.isalpha():
+				await message.answer('<b>Объем должен быть числом!</b>')
+				return
+			else:
+				with open(f'allcases/{message.from_user.id}.txt', 'w') as f:
+					f.write(f'{data["coin"]} {data["price"]} {message.text}')
 
-		await bot.send_message(message.from_user.id, '<b>Ваш портфель успешно создан!</b>')
-		await state.finish()
+				await bot.send_message(message.from_user.id, '<b>Ваш портфель успешно создан!</b>')
+				await state.finish()
+
+
+	@dp.message_handler(state=updateCase.coin)
+	async def input_coin_update(message: types.Message, state: FSMContext):
+		if len(message.text) < 3:
+			await message.answer('<b>Название должно быть длиннее!</b>')
+			return
+
+		async with state.proxy() as data:
+			data['coin'] = message.text.upper()
+
+		await updateCase.next()
+		await bot.send_message(message.from_user.id, '<b>Введите цену:</b>')
+		await updateCase.price.set()
+
+
+	@dp.message_handler(state=updateCase.price)
+	async def input_volume_update(message: types.Message, state: FSMContext):
+		if message.text.isalpha():
+			await message.answer('<b>Цена должна быть числом!</b>')
+			return
+		else:
+			async with state.proxy() as data:
+				data['price'] = message.text
+
+			await updateCase.next()
+			await bot.send_message(message.from_user.id, '<b>Введите кол-во:</b>')
+			await updateCase.volume.set()
+
+
+	@dp.message_handler(state=updateCase.volume)
+	async def input_price_update(message: types.Message, state: FSMContext):
+		async with state.proxy() as data:
+			if message.text.isalpha():
+				await message.answer('<b>Объем должен быть числом!</b>')
+				return
+			else:
+				old_data = None
+
+				with open(f'allcases/{message.from_user.id}.txt', 'r') as f:
+					old_data = f.read()
+
+				with open(f'allcases/{message.from_user.id}.txt', 'w') as f:
+					f.write(f'{old_data}\n{data["coin"]} {data["price"]} {message.text}')
+
+				await bot.send_message(message.from_user.id, '<b>Ваш портфель успешно обновлен!</b>')
+				await state.finish()
 
 
 	@dp.message_handler(commands=['about', 'test'])

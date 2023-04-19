@@ -132,7 +132,8 @@ def bot_start():
 				'/users <i>- список всех пользователей</i>\n'\
 				'/admins <i>- список всех админов</i>\n'\
 				'/guests <i>- список пользователей без прав админа</i>\n\n'\
-				'/code код <i>- поменять код регистрации</i>\n\n\n'\
+				'/code код <i>- поменять код регистрации</i>\n'\
+				'/logs <i>- ссылка на логи</i>\n\n\n'\
 				'<b>Общая статистика:</b>\n\n'\
 				f'Кол-во зарег. пользователей: <i>{len(getAllStat())}</i>\n\n'\
 				f'Кол-во монет binance: <i>{len(binance_coins)}</i>\n'\
@@ -770,8 +771,7 @@ def bot_start():
 	@dp.message_handler(commands=['start'])
 	async def start_cmd(message: types.Message):
 		if not(getUserStat(message.from_user.id) is not None):
-			await bot.send_message(message.from_user.id, text= f'<b>Привет, {message.from_user.username}!</b>\
-				\nЧтобы продолжить необходимо зарегистрироваться!\n\nВведите код регистрации:')
+			await bot.send_message(message.from_user.id, text= f'<b>Привет, {message.from_user.username}!</b>\nЧтобы продолжить необходимо зарегистрироваться!\n\nВведите код регистрации:')
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 
@@ -849,7 +849,7 @@ def bot_start():
 				else:
 					await getCoins(message, bot, 'binance')
 
-			if msg == 'bybit':
+			if msg == 'bybit_test':
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
 				except Throttled:

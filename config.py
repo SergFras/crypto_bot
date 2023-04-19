@@ -1,4 +1,4 @@
-bot_version = '3.9 <b>aiogram binance bybit</b>\nMACBETH CRYPTO BOT\n@sergfras'
+bot_version = '4.0\n\n<b>aiogram binance bybit</b>\nMACBETH CRYPTO BOT\n@sergfras'
 # https://t.me/macbeth_crypto_bot
 
 telegram_token = '5812953435:AAGv2qPkrpbAHnefWn-eSfbBJ1xKN-rehmw'

@@ -17,11 +17,15 @@ def restart():
 while True:
 	now = time.localtime()
 
+	if now.tm_hour == 3 and now.tm_min == 58:
+		restart()
 	if now.tm_hour == 7 and now.tm_min == 58:
 		restart()
-	if now.tm_hour == 13 and now.tm_min == 58:
+	if now.tm_hour == 11 and now.tm_min == 58:
 		restart()
-	if now.tm_hour == 17 and now.tm_min == 58:
+	if now.tm_hour == 15 and now.tm_min == 58:
+		restart()
+	if now.tm_hour == 19 and now.tm_min == 58:
 		restart()
 	if now.tm_hour == 23 and now.tm_min == 58:
 		restart()

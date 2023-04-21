@@ -12,7 +12,7 @@
 # ...
 # точечки это инфа, которую будет выдавать бот
 
-from modules.parse import checkCoinScam
+from config import *
 
-print(checkCoinScam('0X74E2A7DA4BCFD00A7BF9D2A60E2B1A407F055A31'))
-print(checkCoinScam('0x91aE57c153Edc869b401bDc8f4965861C16C9291'))
+for i in binance_coins:
+    print(i)

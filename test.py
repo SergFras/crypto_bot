@@ -15,4 +15,7 @@
 from config import *
 
 for i in binance_coins:
-    print(i)
+    if i == 'ARBUSDT':
+        print(f'https://www.binance.com/en/trade/{i[:-4]}_USDT/')
+    else:
+        print(f'https://www.binance.com/en/trade/{i[:-4]}_BUSD/')

@@ -73,6 +73,8 @@ async def getCase(message, bot, dp):
 		elif arg == 'clear' or arg == 'delete' or arg == 'remove':
 			await bot.send_message(message.from_user.id, '<b>Введите название портфеля:</b>')
 			await deleteCase.name.set()
+		elif arg == 'help':
+			await bot.send_message(message.from_user.id, '<b>Инструкция:</b>\n\n<code>/case create</code> - создать новый портфель\n<code>/case update</code> - добавить новые монеты\n<code>/case delete</code> - удалить портфель\n\n<i>Нажмите, чтобы скопировать.</i>')
 		else:
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
@@ -98,6 +100,8 @@ async def getCase(message, bot, dp):
 						else:
 							msg += f'<i>{i[0]}</i>\n<b>This coin is not found on binance!</b>\n\n'
 					msg += '\n'
+				msg += '\n<code>/case help</code>'
+
 				await bot.send_message(message.from_user.id, msg)
 			else:
 				await bot.send_message(message.from_user.id, '<b>Портфель еще не создан!</b>\n\n<b>Введите:</b> <code>/case create</code>\n\n<i>Нажмите, чтобы скопировать.</i>')
@@ -512,6 +516,7 @@ def bot_start():
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 
+
 	@dp.message_handler(commands=['scam', 'скам', 'antiscam'])
 	async def scam_cmd(message: types.Message):
 		if getUserStat(message.from_user.id) is not None:
@@ -623,6 +628,22 @@ def bot_start():
 			await state.finish()
 
 
+	@dp.message_handler(state=updateCase.name)
+	async def input_coin_update(message: types.Message, state: FSMContext):
+		filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
+
+		if f'{message.text}.txt' not in filenames:
+			await message.answer('<b>Такая категория не существует!</b>')
+			return
+
+		async with state.proxy() as data:
+			data['name'] = message.text
+
+		await updateCase.next()
+		await bot.send_message(message.from_user.id, '<b>Введите тикер:</b>')
+		await updateCase.coin.set()
+
+
 	@dp.message_handler(state=updateCase.coin)
 	async def input_coin_update(message: types.Message, state: FSMContext):
 		if len(message.text) < 3:
@@ -633,7 +654,7 @@ def bot_start():
 			data['coin'] = message.text.upper()
 
 		await updateCase.next()
-		await bot.send_message(message.from_user.id, '<b>Введите цену:</b>')
+		await bot.send_message(message.from_user.id, '<b>Введите цену покупки:</b>')
 		await updateCase.price.set()
 
 
@@ -660,13 +681,13 @@ def bot_start():
 			else:
 				old_data = None
 
-				with open(f'allcases/{message.from_user.id}.txt', 'r') as f:
+				with open(f'allcases/{message.from_user.id}/{data["name"]}.txt', 'r') as f:
 					old_data = f.read()
 
-				with open(f'allcases/{message.from_user.id}.txt', 'w') as f:
+				with open(f'allcases/{message.from_user.id}/{data["name"]}.txt', 'w') as f:
 					f.write(f'{old_data}\n{data["coin"]} {data["price"]} {message.text}')
 
-				await bot.send_message(message.from_user.id, '<b>Ваш портфель успешно обновлен!</b>')
+				await bot.send_message(message.from_user.id, f'<b>Ваш портфель ({data["name"]}) успешно обновлен!</b>')
 				await state.finish()
 
 

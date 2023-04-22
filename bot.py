@@ -70,7 +70,7 @@ async def getCase(message, bot, dp):
 		elif arg == 'update':
 			await bot.send_message(message.from_user.id, '<b>Введите название портфеля:</b>')
 			await updateCase.name.set()
-		elif arg == 'clear':
+		elif arg == 'clear' or arg == 'delete' or arg == 'remove':
 			await bot.send_message(message.from_user.id, '<b>Введите название портфеля:</b>')
 			await deleteCase.name.set()
 		else:
@@ -94,7 +94,7 @@ async def getCase(message, bot, dp):
 						price = checkPrice(i[0])
 
 						if price != 'Error':
-							msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> ${price}\n<b>📉24h:</b> {None}%\n<b>💳Hold:</b> {i[2]} (${round(float(i[2]) * price, 3)})\n<b>⚖️AvgBuy:</b> ${i[1]}\n<b>📈P&L:</b> ${None} ({None}%)\n\n'
+							msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> ${price}\n<b>📉24h:</b> {None}%\n<b>💳Hold:</b> {i[2]} (${round(float(i[2]) * price, 3)})\n<b>⚖️AvgBuy:</b> ${i[1]}\n<b>📈P&L:</b> ${round(price - float(i[1]), 3)} ({None}%)\n\n'
 						else:
 							msg += f'<i>{i[0]}</i>\n<b>This coin is not found on binance!</b>\n\n'
 					msg += '\n'
@@ -548,6 +548,13 @@ def bot_start():
 			await message.answer('<b>Название должно быть длиннее!</b>')
 			return
 
+		filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
+
+		for name in filenames:
+			if message.text.lower() == name[:-4].lower():
+				await message.answer('<b>Такая категория уже существует!</b>')
+				return
+
 		async with state.proxy() as data:
 			data['name'] = message.text
 
@@ -604,11 +611,16 @@ def bot_start():
 	@dp.message_handler(state=deleteCase.name)
 	async def input_name_open(message: types.Message, state: FSMContext):
 		async with state.proxy() as data:
+			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
+
+			if f'{message.text}.txt' not in filenames:
+				await message.answer('<b>Такая категория не существует!</b>')
+				return
+
 			os.remove(f'allcases/{message.from_user.id}/{message.text}.txt')
 
-			await bot.send_message(message.from_user.id, f'<b>Ваш портфель ({data["name"]}) удален!</b>')
+			await bot.send_message(message.from_user.id, f'<b>Ваш портфель ({message.text}) удален!</b>')
 			await state.finish()
-
 
 
 	@dp.message_handler(state=updateCase.coin)

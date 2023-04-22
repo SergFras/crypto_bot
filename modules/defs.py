@@ -1,6 +1,8 @@
 import datetime
 #from modules.parse import getnewPrices, getResponse, getAdvInfo
 from binance import Client, ThreadedWebsocketManager, ThreadedDepthCacheManager
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import StatesGroup, State
 import pandas as pd
 from config import *
 from database.db import *
@@ -126,6 +128,27 @@ def changeCode(code):
 	with open('modules/code.txt', 'w') as f:
 		f.write(code)
 
+
+class createCase(StatesGroup):
+	name = State()
+	coin = State()
+	price = State()
+	volume = State()
+
+
+class updateCase(StatesGroup):
+	name = State()
+	coin = State()
+	price = State()
+	volume = State()
+
+
+class deleteCase(StatesGroup):
+	name = State()
+
+
+class createScam(StatesGroup):
+	check = State()
 
 
 ''' Coingeko

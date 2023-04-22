@@ -17,24 +17,6 @@ from modules.parse import checkCoinScam
 
 
 
-class createCase(StatesGroup):
-	name = State()
-	coin = State()
-	price = State()
-	volume = State()
-
-
-class updateCase(StatesGroup):
-	name = State()
-	coin = State()
-	price = State()
-	volume = State()
-
-
-class createScam(StatesGroup):
-	check = State()
-
-
 # def getKeyboard():
 # 	keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 # 	keyboard.row('ON✅', 'OFF❌')
@@ -79,31 +61,21 @@ async def getCase(message, bot, dp):
 	else:
 		arg = message.text[6:]
 
+		if not(os.path.exists(f'allcases/{message.from_user.id}/')):
+			os.mkdir(f'allcases/{message.from_user.id}/')
+
 		if arg == 'create':
-			await bot.send_message(message.from_user.id, '<b>Введите название портфеля</b>')
+			await bot.send_message(message.from_user.id, '<b>Введите название портфеля:</b>')
 			await createCase.name.set()
 		elif arg == 'update':
-			await bot.send_message(message.from_user.id, '<b>Введите название торговой пары:</b>')
-			await updateCase.coin.set()
+			await bot.send_message(message.from_user.id, '<b>Введите название портфеля:</b>')
+			await updateCase.name.set()
 		elif arg == 'clear':
-			os.remove(f'allcases/{message.from_user.id}.txt')
-			await bot.send_message(message.from_user.id, '<b>Портфель успешно удален!</b>')
+			await bot.send_message(message.from_user.id, '<b>Введите название портфеля:</b>')
+			await deleteCase.name.set()
 		else:
-			if os.path.exists(f'allcases/{message.from_user.id}.txt'):
-				data, msg = [], '<b>Ваш портфель:</b>\n\n'
-				with open(f'allcases/{message.from_user.id}.txt', 'r') as f:
-					tmp = f.readlines()
-
-					for i in tmp:
-						i = i.replace('\n', '')
-						data.append(list(i.split(' ')))
-				for i in data:
-					msg += f'<b>{i[0]}</b> - ${i[1]}<i>({i[2]})</i>\n'
-
-				await bot.send_message(message.from_user.id, '<b>Инструкция:</b>\n\n<code>/case create</code> - создать новый портфель\n<code>/case update</code> - добавить новые монеты\n<code>/case clear</code> - удалить портфель\n\n<i>Нажмите, чтобы скопировать.</i>')
-				await bot.send_message(message.from_user.id, msg)
-			else:
-				await bot.send_message(message.from_user.id, '<b>Портфель еще не создан!</b>\n\n<b>Введите:</b> <code>/case create</code>\n<i>Нажмите, чтобы скопировать.</i>')
+			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
+			print(filenames[0][:-4])
 
 
 def spaces(lst, string):
@@ -555,7 +527,7 @@ def bot_start():
 			data['name'] = message.text
 
 		await createCase.next()
-		await bot.send_message(message.from_user.id, '<b>Введите название торговой пары:</b>')
+		await bot.send_message(message.from_user.id, '<b>Введите тикер:</b>')
 		await createCase.coin.set()
 
 
@@ -569,7 +541,7 @@ def bot_start():
 			data['coin'] = message.text.upper()
 
 		await createCase.next()
-		await bot.send_message(message.from_user.id, '<b>Введите цену:</b>')
+		await bot.send_message(message.from_user.id, '<b>Введите цену покупки:</b>')
 		await createCase.price.set()
 
 
@@ -594,11 +566,24 @@ def bot_start():
 				await message.answer('<b>Объем должен быть числом!</b>')
 				return
 			else:
-				with open(f'allcases/{message.from_user.id}.txt', 'w') as f:
-					f.write(f'{data["coin"]} {data["price"]} {message.text}')
+				async with state.proxy() as data:
+					data['volume'] = message.text
 
-				await bot.send_message(message.from_user.id, '<b>Ваш портфель успешно создан!</b>')
+				with open(f'allcases/{message.from_user.id}/{data["name"]}.txt', 'w') as f:
+					f.write(f'{data["coin"]} {data["price"]} {data["volume"]}')
+
+				await bot.send_message(message.from_user.id, f'<b>Ваш портфель ({data["name"]}) успешно создан!</b>')
 				await state.finish()
+
+
+	@dp.message_handler(state=deleteCase.name)
+	async def input_name_open(message: types.Message, state: FSMContext):
+		async with state.proxy() as data:
+			os.remove(f'allcases/{message.from_user.id}/{message.text}.txt')
+
+			await bot.send_message(message.from_user.id, f'<b>Ваш портфель ({data["name"]}) удален!</b>')
+			await state.finish()
+
 
 
 	@dp.message_handler(state=updateCase.coin)

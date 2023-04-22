@@ -77,25 +77,28 @@ async def getCase(message, bot, dp):
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 			print(filenames)
 
-			data, msg = [], '<b>📕Status of your portfolio:</b>\n\n'
-			for path in filenames:
-				with open(f'allcases/{message.from_user.id}/{path}') as f:
-					tmp = [path[:-4], f.readlines()]
-					data.append(tmp)
+			if len(filenames):
+				data, msg = [], '<b>📕Status of your portfolio:</b>\n\n'
+				for path in filenames:
+					with open(f'allcases/{message.from_user.id}/{path}') as f:
+						tmp = [path[:-4], f.readlines()]
+						data.append(tmp)
 
-			for info in data:
-				values = []
-				msg += f'<b>{info[0]}:</b>\n'
+				for info in data:
+					values = []
+					msg += f'<b>{info[0]}:</b>\n'
 
-				for i in info[1]:
-					i = i.replace('\n', '')
-					values.append(list(i.split(' ')))
-				for i in values:
-					msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> {None}\n<b>📉24h:</b> {None}\n<b>💳Hold:</b> {None}\n<b>⚖️AvgBuy:</b> {None}\n<b>📈P&L:</b> {None}\n\n'
-				msg += '\n'
-			# 	for pod_info in info:
-			# 		print(info[1])
-			await bot.send_message(message.from_user.id, msg)
+					for i in info[1]:
+						i = i.replace('\n', '')
+						values.append(list(i.split(' ')))
+					for i in values:
+						msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> {None}\n<b>📉24h:</b> {None}\n<b>💳Hold:</b> {None}\n<b>⚖️AvgBuy:</b> {None}\n<b>📈P&L:</b> {None}\n\n'
+					msg += '\n'
+				# 	for pod_info in info:
+				# 		print(info[1])
+				await bot.send_message(message.from_user.id, msg)
+			else:
+				await bot.send_message(message.from_user.id, '<b>Портфель еще не создан!</b>\n\n<b>Введите:</b> <code>/case create</code>\n\n<i>Нажмите, чтобы скопировать.</i>')
 
 
 def spaces(lst, string):

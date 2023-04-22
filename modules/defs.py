@@ -151,6 +151,18 @@ class createScam(StatesGroup):
 	check = State()
 
 
+def checkPrice(coin):
+	client = Client(binance_token, binance_secret)
+	tickers = client.get_all_tickers()
+	ticker_df = pd.DataFrame(tickers)
+	ticker_df.set_index('symbol', inplace=True)
+
+	try:
+		return round(float(ticker_df.loc[str(coin)]["price"]), 3)
+	except Exception:
+		return 'Error'
+
+
 ''' Coingeko
 def defStarting():
 	new = []

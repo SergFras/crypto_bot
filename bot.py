@@ -75,7 +75,6 @@ async def getCase(message, bot, dp):
 			await deleteCase.name.set()
 		else:
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
-			print(filenames)
 
 			if len(filenames):
 				data, msg = [], '<b>📕Status of your portfolio:</b>\n\n'
@@ -92,10 +91,13 @@ async def getCase(message, bot, dp):
 						i = i.replace('\n', '')
 						values.append(list(i.split(' ')))
 					for i in values:
-						msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> {None}\n<b>📉24h:</b> {None}\n<b>💳Hold:</b> {None}\n<b>⚖️AvgBuy:</b> {None}\n<b>📈P&L:</b> {None}\n\n'
+						price = checkPrice(i[0])
+
+						if price != 'Error':
+							msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> ${price}\n<b>📉24h:</b> {None}%\n<b>💳Hold:</b> {i[2]} (${round(float(i[2]) * price, 3)})\n<b>⚖️AvgBuy:</b> ${i[1]}\n<b>📈P&L:</b> ${None} ({None}%)\n\n'
+						else:
+							msg += f'<i>{i[0]}</i>\n<b>This coin is not found on binance!</b>\n\n'
 					msg += '\n'
-				# 	for pod_info in info:
-				# 		print(info[1])
 				await bot.send_message(message.from_user.id, msg)
 			else:
 				await bot.send_message(message.from_user.id, '<b>Портфель еще не создан!</b>\n\n<b>Введите:</b> <code>/case create</code>\n\n<i>Нажмите, чтобы скопировать.</i>')

@@ -156,7 +156,7 @@ async def getCoins(message, bot, value):
 			msg += f'<code>{spaces(temp, temp[i])} {temp2[i]}</code>\n'
 
 	updateUnick(message.from_user.id, message.from_user.username)
-	await bot.send_message(message.from_user.id, msg)
+	await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard('tools'))
 
 
 async def getOptions(message, bot):

@@ -1,4 +1,4 @@
-bot_version = '4.0\n\n<b>aiogram binance bybit</b>\nMACBETH CRYPTO BOT\n@sergfras'
+bot_version = '4.1\n\n<b>aiogram binance bybit</b>\nMACBETH CRYPTO BOT\n@sergfras'
 # https://t.me/macbeth_crypto_bot
 
 telegram_token = '5812953435:AAGv2qPkrpbAHnefWn-eSfbBJ1xKN-rehmw'
@@ -24,7 +24,7 @@ time_frades_minutes = [1, 5, 15, 30]
 time_frades_precents = [0.6, 1.8, 2.55, 3.1]
 
 
-access_denied = '<b>У вас недостаточно прав для выполнения данной команды!</b>'
+access_denied = "<b>У вас недостаточно прав для выполнения данной команды!\nYou don't have enough rights to execute this command!</b>"
 
 
 cmd_coins = ['BTCBUSD', 'ETHBUSD', 'BNBBUSD', 'XRPBUSD', 'ADABUSD', 'DOGEBUSD', 'MATICBUSD', 'SOLBUSD', 'DOTBUSD',

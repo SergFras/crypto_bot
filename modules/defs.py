@@ -1,5 +1,6 @@
 import datetime
 #from modules.parse import getnewPrices, getResponse, getAdvInfo
+from aiogram import Bot, Dispatcher, executor, types
 from binance import Client, ThreadedWebsocketManager, ThreadedDepthCacheManager
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
@@ -151,6 +152,103 @@ class createScam(StatesGroup):
 	check = State()
 
 
+def getKeyboard(message, arg):
+	keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+	if arg == 'main':
+		if getUserStat(message.from_user.id)[5] == 'en':
+			keyboard.row('Subscription', 'FAQ')
+			keyboard.row('Tools')
+		else:
+			keyboard.row('Подписка', 'FAQ')
+			keyboard.row('Инструменты')
+	if arg == 'tools':
+		if getUserStat(message.from_user.id)[5] == 'en':
+			keyboard.row('Scam', 'Coins', 'Volatility')
+			keyboard.row('Algorithm', 'Portfolio')
+		else:
+			keyboard.row('Скам', 'Койны', 'Волатильность')
+			keyboard.row('Алгоритм', 'Портфель')
+	if arg == 'logic':
+		if getUserStat(message.from_user.id)[5] == 'en':
+			keyboard.row('On', 'Off')
+			keyboard.row('Options', 'Tools')
+		else:
+			keyboard.row('Вкл', 'Выкл')
+			keyboard.row('Настройки', 'Инструменты')
+
+	return keyboard
+
+
+def spaces(lst, string):
+	string = str(string)
+	tmp = []
+	for i in range(len(lst)):
+		tmp.append(len(str(lst[i])))
+	n = max(tmp)
+	f = len(string)
+	while len(string) < n:
+		string += ' '
+
+	return string
+
+
+async def getCoins(message, bot, value):
+	msg = ''
+
+	if value == 'binance':
+		client = Client(binance_token, binance_secret)
+		tickers = client.get_all_tickers()
+		ticker_df = pd.DataFrame(tickers)
+		ticker_df.set_index('symbol', inplace=True)
+
+		temp, temp2 = [], []
+		msg = f'<b>Всего монет:</b> <i>{len(cmd_coins)}</i>\n<b>Биржа:</b> <i>{value}</i>\n\n'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = f'<b>Total coins:</b> <i>{len(cmd_coins)}</i>\n<b>Stock Market:</b> <i>{value}</i>\n\n'
+
+		for i in range(len(cmd_coins) // 2):
+			temp.append(f'<code>{cmd_coins[i][:-4]}: ${round(float(ticker_df.loc[cmd_coins[i]]["price"]), 3)}</code>')
+
+		for i in range(len(cmd_coins) // 2, len(cmd_coins)):
+			temp2.append(f'<code>{cmd_coins[i][:-4]}: ${round(float(ticker_df.loc[cmd_coins[i]]["price"]), 3)}</code>')
+
+		for i in range(len(temp)):
+			msg += f'<code>{spaces(temp, temp[i])} {temp2[i]}</code>\n'
+
+	if value == 'bybit':
+		prices = getPrice(bybit_coins)
+		temp, temp2 = [], []
+		msg = f'<b>Всего монет:</b> <i>{len(bybit_coins)}</i>\n<b>Биржа:</b> <i>{value}</i>\n\n'
+
+		for i in range(len(bybit_coins) // 2):
+			temp.append(f'<code>{bybit_coins[i][:-4]}: ${prices[i]}</code>')
+
+		for i in range(len(bybit_coins) // 2, len(bybit_coins)):
+			temp2.append(f'<code>{bybit_coins[i][:-4]}: ${prices[i]}</code>')
+
+		for i in range(len(temp)):
+			msg += f'<code>{spaces(temp, temp[i])} {temp2[i]}</code>\n'
+
+	updateUnick(message.from_user.id, message.from_user.username)
+	await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'tools'))
+
+
+async def getOptions(message, bot):
+	msg = ''
+
+	if getUserStat(message.from_user.id)[4]:
+		msg = f'<b>Текущие настройки:</b>\n\nИнтервал: {getHours(message.from_user.id)}\nПроцент: {getProcent(message.from_user.id)}\nКод регистрации: /{getCode()}'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = f'<b>Current options:</b>\n\nInterval: {getHours(message.from_user.id)}\nPercent: {getProcent(message.from_user.id)}\nCode for registration: /{getCode()}'
+	else:
+		msg = f'<b>Текущие настройки:</b>\n\nИнтервал: {getHours(message.from_user.id)}\nПроцент: {getProcent(message.from_user.id)}'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = f'<b>Current options:</b>\n\nInterval: {getHours(message.from_user.id)}\nPercent: {getProcent(message.from_user.id)}'
+
+	await bot.send_message(message.from_user.id, msg)
+
+
 def checkPrice(coin):
 	client = Client(binance_token, binance_secret)
 	tickers = client.get_all_tickers()
@@ -163,6 +261,13 @@ def checkPrice(coin):
 		return 'Error'
 
 
+
+# def getKeyboard():
+# 	keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+# 	keyboard.row('ON✅', 'OFF❌')
+# 	keyboard.row('COINS💰', 'OPTIONS⚙️')
+#
+# 	return keyboard
 ''' Coingeko
 def defStarting():
 	new = []

@@ -44,7 +44,7 @@ def regUser(uid, uname):
 	uregdate = str(datetime.date.today())
 	con = sl.connect(path)
 	cur = con.cursor()
-	cur.execute('INSERT INTO USERS (uid, uname, uregdate, udefwork, uadmin, uthread, uprocent, uinterval, upid, u1m, u5m, u15m, u30m) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);', (int(uid), str(uname), f'{uregdate}', 0, 0, str(uid), 0.5, 1, 0, 0, 0, 0, 0))
+	cur.execute('INSERT INTO USERS (uid, uname, uregdate, udefwork, uadmin, ulang, uprocent, uinterval, upid, u1m, u5m, u15m, u30m) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);', (int(uid), str(uname), f'{uregdate}', 0, 0, 'en', 0.5, 1, 0, 0, 0, 0, 0))
 	con.commit()
 	con.close()
 
@@ -86,7 +86,7 @@ def getUserStat(uid):
 		uregdate = user[2]
 		udefwork = user[3]
 		uadmin = user[4]
-		uthread = user[5]
+		ulang = user[5]
 		uprocent = user[6]
 		uinterval = user[7]
 		upid = user[8]
@@ -95,7 +95,7 @@ def getUserStat(uid):
 		u15m = user[11]
 		u30m = user[12]
 
-		return (uid, uname, uregdate, udefwork, uadmin, uthread, uprocent, uinterval, upid, u1m, u5m, u15m, u30m)
+		return (uid, uname, uregdate, udefwork, uadmin, ulang, uprocent, uinterval, upid, u1m, u5m, u15m, u30m)
 
 
 def getTfPidsStat():

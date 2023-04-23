@@ -17,38 +17,22 @@ from modules.parse import checkCoinScam
 
 
 
-# def getKeyboard():
-# 	keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-# 	keyboard.row('ON✅', 'OFF❌')
-# 	keyboard.row('COINS💰', 'OPTIONS⚙️')
-#
-# 	return keyboard
-
-
-def getKeyboard(arg):
-	keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-
-	if arg == 'main':
-		keyboard.row('Подписка', 'FAQ')
-		keyboard.row('Инструменты')
-	if arg == 'tools':
-		keyboard.row('Скам', 'Койны', 'Волатильность')
-		keyboard.row('Алгоритм', 'Портфель')
-	if arg == 'logic':
-		keyboard.row('Вкл', 'Выкл')
-		keyboard.row('Настройки', 'Инструменты')
-
-	return keyboard
-
-
 async def getScam(message, bot, dp):
 	try:
 		await dp.throttle(message.text, rate=3)
 	except Throttled:
-		await message.reply(f'<b>Подождите 3 секунды. Нельзя часто использовать эту команду.</b>')
+		msg = f'<b>Подождите 3 секунды. Нельзя часто использовать эту команду.</b>'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = "<b>Wait 3 seconds. You can't use this command often.</b>"
+
+		await message.reply(msg)
 		await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 	else:
-		await bot.send_message(message.from_user.id, '<b>Введите токен для проверки:</b>')
+		msg = '<b>Введите токен для проверки:</b>'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = f"<b>Enter the token to verify:</b>"
+
+		await bot.send_message(message.from_user.id, msg)
 		await createScam.check.set()
 
 
@@ -56,7 +40,11 @@ async def getCase(message, bot, dp):
 	try:
 		await dp.throttle(message.text, rate=3)
 	except Throttled:
-		await message.reply(f'<b>Подождите 3 секунды. Нельзя часто использовать эту команду.</b>')
+		msg = f'<b>Подождите 3 секунды. Нельзя часто использовать эту команду.</b>'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = "<b>Wait 3 seconds. You can't use this command often.</b>"
+
+		await message.reply(msg)
 		await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 	else:
 		arg = message.text[6:]
@@ -65,13 +53,25 @@ async def getCase(message, bot, dp):
 			os.mkdir(f'allcases/{message.from_user.id}/')
 
 		if arg == 'create':
-			await bot.send_message(message.from_user.id, '<b>Введите название портфеля:</b>')
+			msg = '<b>Введите название портфеля:</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = "<b>Enter the portfolio name:</b>"
+
+			await bot.send_message(message.from_user.id, msg)
 			await createCase.name.set()
 		elif arg == 'update':
-			await bot.send_message(message.from_user.id, '<b>Введите название портфеля:</b>')
+			msg = '<b>Введите название портфеля:</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = "<b>Enter the portfolio name:</b>"
+
+			await bot.send_message(message.from_user.id, msg)
 			await updateCase.name.set()
 		elif arg == 'clear' or arg == 'delete' or arg == 'remove':
-			await bot.send_message(message.from_user.id, '<b>Введите название портфеля:</b>')
+			msg = '<b>Введите название портфеля:</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = "<b>Enter the portfolio name:</b>"
+
+			await bot.send_message(message.from_user.id, msg)
 			await deleteCase.name.set()
 		elif arg == 'help':
 			await bot.send_message(message.from_user.id, '<b>Инструкция:</b>\n\n<code>/case create</code> - создать новый портфель\n<code>/case update</code> - добавить новые монеты\n<code>/case delete</code> - удалить портфель\n\n<i>Нажмите, чтобы скопировать.</i>')
@@ -79,7 +79,12 @@ async def getCase(message, bot, dp):
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
 			if len(filenames):
-				data, msg = [], '<b>📕Status of your portfolio:</b>\n\n'
+				data, msg = [], '<b>📕Ваш портфель:</b>\n\n'
+
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = "<b>📕Status of your portfolio:</b>\n\n"
+
+				await bot.send_message(message.from_user.id, msg)
 				for path in filenames:
 					with open(f'allcases/{message.from_user.id}/{path}') as f:
 						tmp = [path[:-4], f.readlines()]
@@ -98,76 +103,20 @@ async def getCase(message, bot, dp):
 						if price != 'Error':
 							msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> ${price}\n<b>📉24h:</b> {None}%\n<b>💳Hold:</b> {i[2]} (${round(float(i[2]) * price, 3)})\n<b>⚖️AvgBuy:</b> ${i[1]}\n<b>📈P&L:</b> ${round(price - float(i[1]), 3)} ({None}%)\n\n'
 						else:
-							msg += f'<i>{i[0]}</i>\n<b>This coin is not found on binance!</b>\n\n'
+							if getUserStat(message.from_user.id)[5] == 'en':
+								msg += f'<i>{i[0]}</i>\n<b>This coin is not found on binance!</b>\n\n'
+							else:
+								msg += f'<i>{i[0]}</i>\n<b>Такого койна нет на бинансе!</b>\n\n'
 					msg += '\n'
 				msg += '\n<code>/case help</code>'
 
 				await bot.send_message(message.from_user.id, msg)
 			else:
-				await bot.send_message(message.from_user.id, '<b>Портфель еще не создан!</b>\n\n<b>Введите:</b> <code>/case create</code>\n\n<i>Нажмите, чтобы скопировать.</i>')
+				msg = '<b>Портфель еще не создан!</b>\n\n<b>Введите:</b> <code>/case create</code>\n\n<i>Нажмите, чтобы скопировать.</i>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>The portfolio has not been created yet!</b>\n\n<b>Enter:</b> <code>/case create</code>\n\n<i>Click to copy.</i>'
 
-
-def spaces(lst, string):
-	string = str(string)
-	tmp = []
-	for i in range(len(lst)):
-		tmp.append(len(str(lst[i])))
-	n = max(tmp)
-	f = len(string)
-	while len(string) < n:
-		string += ' '
-
-	return string
-
-
-async def getCoins(message, bot, value):
-	msg = ''
-
-	if value == 'binance':
-		client = Client(binance_token, binance_secret)
-		tickers = client.get_all_tickers()
-		ticker_df = pd.DataFrame(tickers)
-		ticker_df.set_index('symbol', inplace=True)
-
-		temp, temp2 = [], []
-		msg = f'<b>Всего монет:</b> <i>{len(cmd_coins)}</i>\n<b>Биржа:</b> <i>{value}</i>\n\n'
-
-		for i in range(len(cmd_coins) // 2):
-			temp.append(f'<code>{cmd_coins[i][:-4]}: ${round(float(ticker_df.loc[cmd_coins[i]]["price"]), 3)}</code>')
-
-		for i in range(len(cmd_coins) // 2, len(cmd_coins)):
-			temp2.append(f'<code>{cmd_coins[i][:-4]}: ${round(float(ticker_df.loc[cmd_coins[i]]["price"]), 3)}</code>')
-
-		for i in range(len(temp)):
-			msg += f'<code>{spaces(temp, temp[i])} {temp2[i]}</code>\n'
-
-	if value == 'bybit':
-		prices = getPrice(bybit_coins)
-		temp, temp2 = [], []
-		msg = f'<b>Всего монет:</b> <i>{len(bybit_coins)}</i>\n<b>Биржа:</b> <i>{value}</i>\n\n'
-
-		for i in range(len(bybit_coins) // 2):
-			temp.append(f'<code>{bybit_coins[i][:-4]}: ${prices[i]}</code>')
-
-		for i in range(len(bybit_coins) // 2, len(bybit_coins)):
-			temp2.append(f'<code>{bybit_coins[i][:-4]}: ${prices[i]}</code>')
-
-		for i in range(len(temp)):
-			msg += f'<code>{spaces(temp, temp[i])} {temp2[i]}</code>\n'
-
-	updateUnick(message.from_user.id, message.from_user.username)
-	await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard('tools'))
-
-
-async def getOptions(message, bot):
-	msg = ''
-
-	if getUserStat(message.from_user.id)[4]:
-		msg = f'<b>Текущие настройки:</b>\n\nИнтервал: {getHours(message.from_user.id)}\nПроцент: {getProcent(message.from_user.id)}\nКод регистрации: /{getCode()}'
-	else:
-		msg = f'<b>Текущие настройки:</b>\n\nИнтервал: {getHours(message.from_user.id)}\nПроцент: {getProcent(message.from_user.id)}'
-
-	await bot.send_message(message.from_user.id, f'{msg}')
+				await bot.send_message(message.from_user.id, msg)
 
 
 def bot_start():
@@ -451,10 +400,18 @@ def bot_start():
 			try:
 				await dp.throttle(message.text, rate=time_for_spam_ban)
 			except Throttled:
-				await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+				msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+				await message.reply(msg)
 				await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 			else:
-				await bot.send_message(message.from_user.id, '<b>Клавиатура обновлена!</b>', reply_markup=getKeyboard('tools'))
+				msg = '<b>Клавиатура обновлена!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>The keyboard has been updated!</b>'
+
+				await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'tools'))
 
 
 	@dp.message_handler(commands=['logic_on'])
@@ -465,10 +422,18 @@ def bot_start():
 
 				os.system(f'start python logic.py {message.from_user.id}')
 
-				await bot.send_message(message.from_user.id, '<b>Алгоритм запущен!</b>')
+				msg = '<b>Алгоритм запущен!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>Algorithm has been started!</b>'
+
+				await bot.send_message(message.from_user.id, msg)
 				await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} запустил алгоритм</b>\n\n<i>Id: {message.from_user.id}</i>')
 			else:
-				await bot.send_message(message.from_user.id, '<b>Алгоритм уже запущен!</b>')
+				msg = '<b>Алгоритм уже запущен!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>The algorithm is already running!</b>'
+
+				await bot.send_message(message.from_user.id, msg)
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 
@@ -481,10 +446,18 @@ def bot_start():
 				os.system(f'start Taskkill /PID {int(getUserStat(message.from_user.id)[8])} /F')
 				updateUpid(message.from_user.id, 0)
 
-				await bot.send_message(message.from_user.id, '<b>Алгоритм отключен!</b>')
+				msg = '<b>Алгоритм отключен!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>Algorithm has been disabled!</b>'
+
+				await bot.send_message(message.from_user.id, msg)
 				await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} отключил алгоритм</b>\n\n<i>Id: {message.from_user.id}</i>')
 			else:
-				await bot.send_message(message.from_user.id, '<b>Алгоритм уже выключен!</b>')
+				msg = '<b>Алгоритм уже выключен!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>The algorithm is already disabled!</b>'
+
+				await bot.send_message(message.from_user.id, msg)
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 
@@ -495,7 +468,11 @@ def bot_start():
 			try:
 				await dp.throttle(message.text, rate=time_for_spam_ban)
 			except Throttled:
-				await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+				msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+				await message.reply(msg)
 				await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 			else:
 				await getOptions(message, bot)
@@ -509,7 +486,11 @@ def bot_start():
 			try:
 				await dp.throttle(message.text, rate=3)
 			except Throttled:
-				await message.reply(f'<b>Подождите 3 секунды. Нельзя часто использовать эту команду.</b>')
+				msg = f'<b>Подождите 3 секунды. Нельзя часто использовать эту команду.</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = f"<b>Wait 3 seconds. You can't use this command often.</b>"
+
+				await message.reply(msg)
 				await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 			else:
 				await getCoins(message, bot, 'binance')
@@ -530,10 +511,16 @@ def bot_start():
 		msg = ''
 		if checkCoinScam(message.text) == 'true':
 			msg = 'Предположительно не скам'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = 'Presumably not a scam'
 		elif checkCoinScam(message.text) == 'Ошибка соединения!':
 			msg = 'Ошибка'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = 'Error'
 		else:
 			msg = 'Предположительно скам'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = 'Presumably a scam'
 
 		await bot.send_message(message.from_user.id, f'<b>{msg}!</b>')
 		await state.finish()
@@ -697,7 +684,11 @@ def bot_start():
 			try:
 				await dp.throttle(message.text, rate=time_for_spam_ban)
 			except Throttled:
-				await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+				msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+				await message.reply(msg)
 				await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 			else:
 				await bot.send_message(message.from_user.id, f'Версия Бота: {bot_version}')
@@ -808,8 +799,13 @@ def bot_start():
 	@dp.callback_query_handler(lambda c: c.data == 'upersm')
 	async def upersm_cmd(callback_query: types.CallbackQuery):
 		msg = '<b>Как создать свой алгоритм? Инструкция:</b>\n\n<b>Настройки:</b>\n<code>/time</code> <i>час</i>  <b>- интервал проверки</b>\n<code>/percent</code> <i>процент</i>  <b>- порог проверки</b>\n\n<b>Запуск:</b>\n<code>/logic_on</code>  <b>- запустить алгоритм</b>\n<code>/logic_off</code>  <b>- выключить алгоритм</b>\n\nПисать все числами, не указывать знаки процента и прочее!\nВ <code>/time</code> указывать строго время в часах\nЕсли число дробное, то писать через точку!'
-		key1 = types.InlineKeyboardButton('Включить', callback_data='logic_on')
-		key2 = types.InlineKeyboardButton('Выключить', callback_data='logic_off')
+		if getUserStat(callback_query.from_user.id)[5] == 'en':
+			msg = '<b>How to create your own algorithm? Instruction manual:</b>\n\n<b>Settings:</b>\n<code>/time</code> <i>hour</i>  <b>- interval for check</b>\n<code>/percent</code> <i>percent</i>  <b>- trigger for check</b>\n\n<b>Start:</b>\n<code>/logic_on</code>  <b>- Enable</b>\n<code>/logic_off</code>  <b>- Disable</b>\n\nWrite everything in numbers, do not specify percent signs and so on!\nOn <code>/time</code> specify strictly the time in hours\nIf the number is fractional, then write through a dot!'
+			key1 = types.InlineKeyboardButton('Enable', callback_data='logic_on')
+			key2 = types.InlineKeyboardButton('Disable', callback_data='logic_off')
+		else:
+			key1 = types.InlineKeyboardButton('Включить', callback_data='logic_on')
+			key2 = types.InlineKeyboardButton('Выключить', callback_data='logic_off')
 		keyboard = types.InlineKeyboardMarkup().add(key1, key2)
 
 		await bot.answer_callback_query(callback_query.id)
@@ -822,21 +818,24 @@ def bot_start():
 			try:
 				await dp.throttle(message.text, rate=time_for_spam_ban)
 			except Throttled:
-				await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+				msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+				await message.reply(msg)
 				await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 			else:
-				if getUserStat(message.from_user.id)[4]:
-					key = types.InlineKeyboardButton('1 минута', callback_data='u1m')
-					key2 = types.InlineKeyboardButton('5 минут', callback_data='u5m')
-					key3 = types.InlineKeyboardButton('15 минут', callback_data='u15m')
-					key4 = types.InlineKeyboardButton('30 минут', callback_data='u30m')
-					key5 = types.InlineKeyboardButton('Включить все', callback_data='uallm')
-					key6 = types.InlineKeyboardButton('Создать', callback_data='upersm')
-					key7 = types.InlineKeyboardButton('Отключить все', callback_data='uoffsm')
-					keyboard = types.InlineKeyboardMarkup().add(key, key2, key3, key4, key5, key6, key7)
+				msg = '<b>Вы можете включить/выключить рассылку уведомлений по отклонениям\nВыберите готовый интервал, либо создайте свой:</b>\n\n<i>Полная инструкция -></i> @crypto_bot_help'
 
-					msg = '<b>Вы можете включить/выключить рассылку уведомлений по отклонениям\nВыберите готовый интервал, либо создайте свой:</b>\n\n<i>Полная инструкция -></i> @instruction_crypto_bot'
-					await bot.send_message(message.from_user.id, msg, reply_markup=keyboard)
+				if getUserStat(message.from_user.id)[5] == 'en':
+					key = types.InlineKeyboardButton('1 minute', callback_data='u1m')
+					key2 = types.InlineKeyboardButton('5 minutes', callback_data='u5m')
+					key3 = types.InlineKeyboardButton('15 minutes', callback_data='u15m')
+					key4 = types.InlineKeyboardButton('30 minutes', callback_data='u30m')
+					key5 = types.InlineKeyboardButton('Enable all', callback_data='uallm')
+					key6 = types.InlineKeyboardButton('Create own', callback_data='upersm')
+					key7 = types.InlineKeyboardButton('Disable all', callback_data='uoffsm')
+					msg = '<b>You can enable/disable sending notifications on deviations\nChoose a ready-made interval, or create your own:</b>\n\n<i>Full instruction -></i> @crypto_bot_help'
 				else:
 					key = types.InlineKeyboardButton('1 минута', callback_data='u1m')
 					key2 = types.InlineKeyboardButton('5 минут', callback_data='u5m')
@@ -845,10 +844,10 @@ def bot_start():
 					key5 = types.InlineKeyboardButton('Включить все', callback_data='uallm')
 					key6 = types.InlineKeyboardButton('Создать', callback_data='upersm')
 					key7 = types.InlineKeyboardButton('Отключить все', callback_data='uoffsm')
-					keyboard = types.InlineKeyboardMarkup().add(key, key2, key3, key4, key5, key6, key7)
 
-					msg = '<b>Вы можете включить/выключить рассылку уведомлений по отклонениям\nВыберите готовый интервал, либо создайте свой:</b>\n\n<i>Полная инструкция -></i> @crypto_bot_help'
-					await bot.send_message(message.from_user.id, msg, reply_markup=keyboard)
+				keyboard = types.InlineKeyboardMarkup().add(key, key2, key3, key4, key5, key6, key7)
+
+				await bot.send_message(message.from_user.id, msg, reply_markup=keyboard)
 		else:
 			await bot.send_message(message.from_user.id, '@crypto_bot_help')
 
@@ -856,7 +855,7 @@ def bot_start():
 	@dp.message_handler(commands=['start'])
 	async def start_cmd(message: types.Message):
 		if not(getUserStat(message.from_user.id) is not None):
-			await bot.send_message(message.from_user.id, text= f'<b>Привет, {message.from_user.username}!</b>\nЧтобы продолжить необходимо зарегистрироваться!\n\nВведите код регистрации:')
+			await bot.send_message(message.from_user.id, text= f'<b>Hi, {message.from_user.username}!</b>\nTo continue, you need to register!\n\nEnter the registration code:')
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 
@@ -864,7 +863,7 @@ def bot_start():
 	@dp.message_handler(commands=['registration', 'reg', 'регистрация', 'register', 'рег'])
 	async def register_cmd(message: types.Message):
 		if not(getUserStat(message.from_user.id) is not None):
-			await bot.send_message(message.from_user.id, '<b>Введите код:</b>')
+			await bot.send_message(message.from_user.id, '<b>Enter the registration code:</b>')
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 
@@ -880,7 +879,7 @@ def bot_start():
 				code += abc[random.randint(0, len(abc)-1)]
 			changeCode(code)
 
-			await bot.send_message(message.from_user.id, '<b>Регистрация прошла успешно!</b>\nИспользуй клавиатуру, чтобы было удобнее!', reply_markup=getKeyboard('main'))
+			await bot.send_message(message.from_user.id, '<b>Registration was successful!</b>\nUse the keyboard to make it more convenient!', reply_markup=getKeyboard(message, 'main'))
 			await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} зарегистрировался!</b>\n\n<i>Id: {message.from_user.id}</i>')
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
@@ -891,11 +890,15 @@ def bot_start():
 		if getUserStat(message.from_user.id) is not None:
 			msg = message.text.lower()
 
-			if msg == 'on✅' or msg == 'вкл':
+			if msg == 'on' or msg == 'вкл':
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
 				except Throttled:
-					await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+					msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+					await message.reply(msg)
 					await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 				else:
 					if int(getUserStat(message.from_user.id)[3]) != 1:
@@ -903,16 +906,28 @@ def bot_start():
 
 						os.system(f'start python logic.py {message.from_user.id}')
 
-						await bot.send_message(message.from_user.id, '<b>Алгоритм запущен!</b>')
+						msg = '<b>Алгоритм запущен!</b>'
+						if getUserStat(message.from_user.id)[5] == 'en':
+							msg = '<b>Algorithm has been started!</b>'
+
+						await bot.send_message(message.from_user.id, msg)
 						await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} запустил алгоритм</b>\n\n<i>Id: {message.from_user.id}</i>')
 					else:
-						await bot.send_message(message.from_user.id, '<b>Алгоритм уже запущен!</b>')
+						msg = '<b>Алгоритм уже запущен!</b>'
+						if getUserStat(message.from_user.id)[5] == 'en':
+							msg = '<b>The algorithm is already running!</b>'
 
-			if msg == 'off❌' or msg == 'выкл':
+						await bot.send_message(message.from_user.id, msg)
+
+			if msg == 'off' or msg == 'выкл':
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
 				except Throttled:
-					await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+					msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+					await message.reply(msg)
 					await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 				else:
 					if int(getUserStat(message.from_user.id)[3]) != 0:
@@ -920,16 +935,28 @@ def bot_start():
 						os.system(f'start Taskkill /PID {int(getUserStat(message.from_user.id)[8])} /F')
 						updateUpid(message.from_user.id, 0)
 
-						await bot.send_message(message.from_user.id, '<b>Алгоритм отключен!</b>')
+						msg = '<b>Алгоритм отключен!</b>'
+						if getUserStat(message.from_user.id)[5] == 'en':
+							msg = '<b>Algorithm has been disabled!</b>'
+
+						await bot.send_message(message.from_user.id, msg)
 						await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} отключил алгоритм</b>\n\n<i>Id: {message.from_user.id}</i>')
 					else:
-						await bot.send_message(message.from_user.id, '<b>Алгоритм уже выключен!</b>')
+						msg = '<b>Алгоритм уже отключен!</b>'
+						if getUserStat(message.from_user.id)[5] == 'en':
+							msg = '<b>The algorithm is already disabled!</b>'
+
+						await bot.send_message(message.from_user.id, msg)
 
 			if msg == 'койны' or msg == 'койн' or msg == 'coins' or msg == 'coin' or msg == 'coins💰' or msg == 'binance':
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
 				except Throttled:
-					await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+					msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+					await message.reply(msg)
 					await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 				else:
 					await getCoins(message, bot, 'binance')
@@ -938,7 +965,11 @@ def bot_start():
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
 				except Throttled:
-					await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+					msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+					await message.reply(msg)
 					await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 				else:
 					await getCoins(message, bot, 'bybit')
@@ -947,7 +978,11 @@ def bot_start():
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
 				except Throttled:
-					await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+					msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+					await message.reply(msg)
 					await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 				else:
 					await getOptions(message, bot)
@@ -956,34 +991,58 @@ def bot_start():
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
 				except Throttled:
-					await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+					msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+					await message.reply(msg)
 					await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 				else:
-					await bot.send_message(message.from_user.id, '<b>Вы перешли в раздел инструменты!</b>', reply_markup=getKeyboard('tools'))
+					msg = '<b>Вы перешли в раздел инструменты!</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = '<b>You have moved to the tools section!</b>'
 
-			if msg == 'алгоритм' or msg == 'logic':
+					await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'tools'))
+
+			if msg == 'алгоритм' or msg == 'logic' or msg == 'algorithm':
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
 				except Throttled:
-					await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+					msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+					await message.reply(msg)
 					await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 				else:
-					await bot.send_message(message.from_user.id, '<b>Вы перешли в раздел алгоритм!</b>', reply_markup=getKeyboard('logic'))
+					msg = '<b>Вы перешли в раздел алгоритм!</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = '<b>You have moved to the algorithm section!</b>'
+
+					await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'logic'))
 
 			if msg == 'скам' or msg == 'scam':
 				await getScam(message, bot, dp)
 
-			if msg == 'портфель' or msg == 'case':
+			if msg == 'портфель' or msg == 'case' or msg == 'portfolio':
 				await getCase(message, bot, dp)
 
 			if msg == 'меню' or msg == 'menu' or msg == '/меню' or msg == '/menu':
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
 				except Throttled:
-					await message.reply(f'<b>Подождите {time_for_spam_ban} секунд. Нельзя часто использовать эту команду.</b>')
+					msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
+
+					await message.reply(msg)
 					await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 				else:
-					await bot.send_message(message.from_user.id, '<b>Вы перешли в раздел меню!</b>', reply_markup=getKeyboard('main'))
+					msg = '<b>Вы перешли в раздел меню!</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = '<b>You have moved to the menu section!</b>'
+
+					await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'main'))
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 

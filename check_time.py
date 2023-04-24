@@ -30,4 +30,4 @@ while True:
 	if now.tm_hour == 23 and now.tm_min == 58:
 		restart()
 
-	time.sleep(40)
+	time.sleep(35)

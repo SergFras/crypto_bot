@@ -82,9 +82,8 @@ async def getCase(message, bot, dp):
 				data, msg = [], '<b>📕Ваш портфель:</b>\n\n'
 
 				if getUserStat(message.from_user.id)[5] == 'en':
-					msg = "<b>📕Status of your portfolio:</b>\n\n"
+					msg = '<b>📕Status of your portfolio:</b>\n\n'
 
-				await bot.send_message(message.from_user.id, msg)
 				for path in filenames:
 					with open(f'allcases/{message.from_user.id}/{path}') as f:
 						tmp = [path[:-4], f.readlines()]
@@ -537,49 +536,77 @@ def bot_start():
 	@dp.message_handler(state=createCase.name)
 	async def input_name(message: types.Message, state: FSMContext):
 		if len(message.text) < 3:
-			await message.answer('<b>Название должно быть длиннее!</b>')
+			msg = '<b>Название должно быть длиннее!</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>The name should be longer!</b>'
+
+			await message.answer(msg)
 			return
 
 		filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
 		for name in filenames:
 			if message.text.lower() == name[:-4].lower():
-				await message.answer('<b>Такая категория уже существует!</b>')
+				msg = '<b>Такая категория уже существует!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>This category already exists!</b>'
+
+				await message.answer(msg)
 				return
 
 		async with state.proxy() as data:
 			data['name'] = message.text
 
 		await createCase.next()
-		await bot.send_message(message.from_user.id, '<b>Введите тикер:</b>')
+		msg = '<b>Введите тикер:</b>'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = '<b>Enter the ticker:</b>'
+
+		await bot.send_message(message.from_user.id, msg)
 		await createCase.coin.set()
 
 
 	@dp.message_handler(state=createCase.coin)
 	async def input_coin(message: types.Message, state: FSMContext):
 		if len(message.text) < 3:
-			await message.answer('<b>Название должно быть длиннее!</b>')
+			msg = '<b>Название должно быть длиннее!</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>The name should be longer!</b>'
+
+			await message.answer(msg)
 			return
 
 		async with state.proxy() as data:
 			data['coin'] = message.text.upper()
 
 		await createCase.next()
-		await bot.send_message(message.from_user.id, '<b>Введите цену покупки:</b>')
+		msg = '<b>Введите цену покупки:</b>'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = '<b>Enter the purchase price:</b>'
+
+		await bot.send_message(message.from_user.id, msg)
 		await createCase.price.set()
 
 
 	@dp.message_handler(state=createCase.price)
 	async def input_volume(message: types.Message, state: FSMContext):
 		if message.text.isalpha():
-			await message.answer('<b>Цена должна быть числом!</b>')
+			msg = '<b>Цена должна быть числом!</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>The price must be a number</b>!'
+
+			await message.answer(msg)
 			return
 		else:
 			async with state.proxy() as data:
 				data['price'] = message.text
 
 			await createCase.next()
-			await bot.send_message(message.from_user.id, '<b>Введите кол-во:</b>')
+			msg = '<b>Введите кол-во:</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>Enter the quantity:</b>'
+
+			await bot.send_message(message.from_user.id, msg)
 			await createCase.volume.set()
 
 
@@ -587,7 +614,11 @@ def bot_start():
 	async def input_price(message: types.Message, state: FSMContext):
 		async with state.proxy() as data:
 			if message.text.isalpha():
-				await message.answer('<b>Объем должен быть числом!</b>')
+				msg = '<b>Объем должна быть числом!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>The volume must be a number</b>!'
+
+				await message.answer(msg)
 				return
 			else:
 				async with state.proxy() as data:
@@ -596,7 +627,11 @@ def bot_start():
 				with open(f'allcases/{message.from_user.id}/{data["name"]}.txt', 'w') as f:
 					f.write(f'{data["coin"]} {data["price"]} {data["volume"]}')
 
-				await bot.send_message(message.from_user.id, f'<b>Ваш портфель ({data["name"]}) успешно создан!</b>')
+				msg = f'<b>Ваш портфель ({data["name"]}) успешно создан!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = f'<b>Your portfolio ({data["name"]}) has been successfully created!</b>'
+
+				await bot.send_message(message.from_user.id, msg)
 				await state.finish()
 
 
@@ -606,12 +641,20 @@ def bot_start():
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
 			if f'{message.text}.txt' not in filenames:
-				await message.answer('<b>Такая категория не существует!</b>')
+				msg = '<b>Такая категория не существует!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>There is no such category!</b>'
+
+				await message.answer(msg)
 				return
 
 			os.remove(f'allcases/{message.from_user.id}/{message.text}.txt')
 
-			await bot.send_message(message.from_user.id, f'<b>Ваш портфель ({message.text}) удален!</b>')
+			msg = f'<b>Ваш портфель ({message.text}) удален!</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = f'<b>Your portfolio ({message.text}) has been deleted!</b>'
+
+			await bot.send_message(message.from_user.id, msg)
 			await state.finish()
 
 
@@ -620,42 +663,66 @@ def bot_start():
 		filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
 		if f'{message.text}.txt' not in filenames:
-			await message.answer('<b>Такая категория не существует!</b>')
+			msg = '<b>Такая категория не существует!</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>There is no such category!</b>'
+
+			await message.answer(msg)
 			return
 
 		async with state.proxy() as data:
 			data['name'] = message.text
 
 		await updateCase.next()
-		await bot.send_message(message.from_user.id, '<b>Введите тикер:</b>')
+		msg = '<b>Введите тикер:</b>'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = '<b>Enter the ticker:</b>'
+
+		await bot.send_message(message.from_user.id, msg)
 		await updateCase.coin.set()
 
 
 	@dp.message_handler(state=updateCase.coin)
 	async def input_coin_update(message: types.Message, state: FSMContext):
 		if len(message.text) < 3:
-			await message.answer('<b>Название должно быть длиннее!</b>')
+			msg = '<b>Название должно быть длиннее!</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>The name should be longer!</b>'
+
+			await message.answer(msg)
 			return
 
 		async with state.proxy() as data:
 			data['coin'] = message.text.upper()
 
 		await updateCase.next()
-		await bot.send_message(message.from_user.id, '<b>Введите цену покупки:</b>')
+		msg = '<b>Введите цену покупки:</b>'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = '<b>Enter the purchase price:</b>'
+
+		await bot.send_message(message.from_user.id, msg)
 		await updateCase.price.set()
 
 
 	@dp.message_handler(state=updateCase.price)
 	async def input_volume_update(message: types.Message, state: FSMContext):
 		if message.text.isalpha():
-			await message.answer('<b>Цена должна быть числом!</b>')
+			msg = '<b>Цена должна быть числом!</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>The price must be a number</b>!'
+
+			await message.answer(msg)
 			return
 		else:
 			async with state.proxy() as data:
 				data['price'] = message.text
 
 			await updateCase.next()
-			await bot.send_message(message.from_user.id, '<b>Введите кол-во:</b>')
+			msg = '<b>Введите кол-во:</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>Enter the quantity:</b>'
+
+			await bot.send_message(message.from_user.id, msg)
 			await updateCase.volume.set()
 
 
@@ -663,7 +730,11 @@ def bot_start():
 	async def input_price_update(message: types.Message, state: FSMContext):
 		async with state.proxy() as data:
 			if message.text.isalpha():
-				await message.answer('<b>Объем должен быть числом!</b>')
+				msg = '<b>Объем должна быть числом!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>The volume must be a number</b>!'
+
+				await message.answer(msg)
 				return
 			else:
 				old_data = None
@@ -674,7 +745,11 @@ def bot_start():
 				with open(f'allcases/{message.from_user.id}/{data["name"]}.txt', 'w') as f:
 					f.write(f'{old_data}\n{data["coin"]} {data["price"]} {message.text}')
 
-				await bot.send_message(message.from_user.id, f'<b>Ваш портфель ({data["name"]}) успешно обновлен!</b>')
+				msg = f'<b>Ваш портфель ({data["name"]}) успешно обновлен!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = f'<b>Your portfolio ({data["name"]}) has been successfully updated!</b>'
+
+				await bot.send_message(message.from_user.id, msg)
 				await state.finish()
 
 
@@ -700,12 +775,20 @@ def bot_start():
 			updateLogicTF(callback_query.from_user.id, 'u1m', 1)
 
 			await bot.answer_callback_query(callback_query.id)
-			await bot.send_message(callback_query.from_user.id, '<b>Включена рассылка интервалом 1 минута!</b>')
+			msg = '<b>Включена рассылка интервалом 1 минута!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Mailing is enabled at 1 minute intervals!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 		else:
 			updateLogicTF(callback_query.from_user.id, 'u1m', 0)
 
 			await bot.answer_callback_query(callback_query.id)
-			await bot.send_message(callback_query.from_user.id, '<b>Рассылка интервалом 1 минута отключена!</b>')
+			msg = '<b>Рассылка интервалом 1 минута отключена!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Mailing is disabled at 1 minute intervals!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 
 
 	@dp.callback_query_handler(lambda c: c.data == 'u5m')
@@ -714,12 +797,20 @@ def bot_start():
 			updateLogicTF(callback_query.from_user.id, 'u5m', 1)
 
 			await bot.answer_callback_query(callback_query.id)
-			await bot.send_message(callback_query.from_user.id, '<b>Включена рассылка интервалом 5 минут!</b>')
+			msg = '<b>Включена рассылка интервалом 5 минут!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Mailing is enabled at 5 minutes intervals!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 		else:
 			updateLogicTF(callback_query.from_user.id, 'u5m', 0)
 
 			await bot.answer_callback_query(callback_query.id)
-			await bot.send_message(callback_query.from_user.id, '<b>Рассылка интервалом 5 минут отключена!</b>')
+			msg = '<b>Рассылка интервалом 5 минут отключена!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Mailing is disabled at 5 minutes intervals!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 
 
 	@dp.callback_query_handler(lambda c: c.data == 'u15m')
@@ -728,12 +819,20 @@ def bot_start():
 			updateLogicTF(callback_query.from_user.id, 'u15m', 1)
 
 			await bot.answer_callback_query(callback_query.id)
-			await bot.send_message(callback_query.from_user.id, '<b>Включена рассылка интервалом 15 минут!</b>')
+			msg = '<b>Включена рассылка интервалом 15 минут!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Mailing is enabled at 15 minutes intervals!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 		else:
 			updateLogicTF(callback_query.from_user.id, 'u15m', 0)
 
 			await bot.answer_callback_query(callback_query.id)
-			await bot.send_message(callback_query.from_user.id, '<b>Рассылка интервалом 15 минут отключена!</b>')
+			msg = '<b>Рассылка интервалом 15 минут отключена!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Mailing is disabled at 15 minutes intervals!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 
 
 	@dp.callback_query_handler(lambda c: c.data == 'u30m')
@@ -742,12 +841,20 @@ def bot_start():
 			updateLogicTF(callback_query.from_user.id, 'u30m', 1)
 
 			await bot.answer_callback_query(callback_query.id)
-			await bot.send_message(callback_query.from_user.id, '<b>Включена рассылка интервалом 30 минут!</b>')
+			msg = '<b>Включена рассылка интервалом 30 минут!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Mailing is enabled at 30 minutes intervals!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 		else:
 			updateLogicTF(callback_query.from_user.id, 'u30m', 0)
 
 			await bot.answer_callback_query(callback_query.id)
-			await bot.send_message(callback_query.from_user.id, '<b>Рассылка интервалом 30 минут отключена!</b>')
+			msg = '<b>Рассылка интервалом 30 минут отключена!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Mailing is disabled at 30 minutes intervals!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 
 
 	@dp.callback_query_handler(lambda c: c.data == 'uallm')
@@ -758,7 +865,11 @@ def bot_start():
 		updateLogicTF(callback_query.from_user.id, 'u30m', 1)
 
 		await bot.answer_callback_query(callback_query.id)
-		await bot.send_message(callback_query.from_user.id, '<b>Включена рассылка интервалом 1, 5, 15, 30 минут!</b>')
+		msg = '<b>Включена рассылка интервалом 1, 5, 15, 30 минут!</b>'
+		if getUserStat(callback_query.from_user.id)[5] == 'en':
+			msg = '<b>The newsletter is included in the interval of 1, 5, 15, 30 minutes!</b>'
+
+		await bot.send_message(callback_query.from_user.id, msg)
 
 
 	@dp.callback_query_handler(lambda c: c.data == 'uoffsm')
@@ -769,7 +880,11 @@ def bot_start():
 		updateLogicTF(callback_query.from_user.id, 'u30m', 0)
 
 		await bot.answer_callback_query(callback_query.id)
-		await bot.send_message(callback_query.from_user.id, '<b>Все рассылки отключены!</b>')
+		msg = '<b>Все рассылки отключены!</b>'
+		if getUserStat(callback_query.from_user.id)[5] == 'en':
+			msg = '<b>All mailings are disabled!</b>'
+
+		await bot.send_message(callback_query.from_user.id, msg)
 
 
 	@dp.callback_query_handler(lambda c: c.data == 'logic_on')
@@ -779,10 +894,18 @@ def bot_start():
 
 			os.system(f'start python logic.py {callback_query.from_user.id}')
 
-			await bot.send_message(callback_query.from_user.id, '<b>Алгоритм запущен!</b>')
+			msg = '<b>Алгоритм запущен!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Algorithm has been started!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 			await bot.send_message(logs_chat_id, f'<b>Пользователь {callback_query.from_user.username} запустил алгоритм</b>\n\n<i>Id: {callback_query.from_user.id}</i>')
 		else:
-			await bot.send_message(callback_query.from_user.id, '<b>Алгоритм уже запущен!</b>')
+			msg = '<b>Алгоритм уже запущен!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Algorithm is already running!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 
 
 	@dp.callback_query_handler(lambda c: c.data == 'logic_off')
@@ -790,10 +913,18 @@ def bot_start():
 		if int(getUserStat(callback_query.from_user.id)[3]) != 0:
 			updateUser(callback_query.from_user.id, 0)
 
-			await bot.send_message(callback_query.from_user.id, '<b>Алгоритм отключен!</b>')
+			msg = '<b>Алгоритм отключен!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Algorithm has been disabled!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 			await bot.send_message(logs_chat_id, f'<b>Пользователь {callback_query.from_user.username} отключил алгоритм</b>\n\n<i>Id: {callback_query.from_user.id}</i>')
 		else:
-			await bot.send_message(callback_query.from_user.id, '<b>Алгоритм уже выключен!</b>')
+			msg = '<b>Алгоритм уже отключен!</b>'
+			if getUserStat(callback_query.from_user.id)[5] == 'en':
+				msg = '<b>Algorithm is already disabled!</b>'
+
+			await bot.send_message(callback_query.from_user.id, msg)
 
 
 	@dp.callback_query_handler(lambda c: c.data == 'upersm')

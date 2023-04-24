@@ -1,5 +1,4 @@
 import datetime
-#from modules.parse import getnewPrices, getResponse, getAdvInfo
 from aiogram import Bot, Dispatcher, executor, types
 from binance import Client, ThreadedWebsocketManager, ThreadedDepthCacheManager
 from aiogram.dispatcher import FSMContext
@@ -7,7 +6,6 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 import pandas as pd
 from config import *
 from database.db import *
-from logics.async_logic import *
 import os
 
 path_coins = 'allcoins/'
@@ -73,6 +71,7 @@ def defStarting(uprocent, file_name):
 
 	with open(f'{path_coins}{file_name}', 'r', encoding='utf-8') as file:
 		old = [float(line.rstrip()) for line in file]
+
 	for i in binance_coins:
 		new.append(float(ticker_df.loc[i]['price']))
 
@@ -81,6 +80,7 @@ def defStarting(uprocent, file_name):
 			tmp = ''
 			tmp2 = ''
 			print(f'Not empty - {str(datetime.datetime.now())[:-10]}')
+
 			if round(old[i] - new[i], 6) > 0:
 				tmp = check_procent_stat(round(((abs(round(old[i] - new[i], 4))*100)/old[i]), 1), 'down')
 				tmp2 = '-'
@@ -88,7 +88,6 @@ def defStarting(uprocent, file_name):
 				tmp = check_procent_stat(round(((abs(round(old[i] - new[i], 4))*100)/old[i]), 1), 'up')
 				tmp2 = '+'
 
-			#res.append(f'<b>Цена отклонилась на {round(((abs(round(old[i] - new[i], 4))*100)/old[i]), 1)}%</b>\n\n<b>{uprocent}% =</b> {round(old[i]*(uprocent/100), 6)}\n<b>Койн:</b> {list(coins.keys())[i]}\n<b>Старая цена:</b> {old[i]}\n<b>Новая цена:</b> {new[i]}\n<b>Цена {tmp} на</b> {abs((round(old[i] - new[i], 6)))}\n')
 			res.append(f'{tmp}<a href="https://www.binance.com/en/trade/{binance_coins[i][:-4]}_BUSD">{binance_coins[i][:-4]}</a> {tmp2}{round(((abs(round(old[i] - new[i], 4))*100)/old[i]), 2)}% / <b>Цена:</b> {new[i]}\n')
 
 	with open(f'{path_coins}{file_name}', 'w', encoding='utf-8') as file:

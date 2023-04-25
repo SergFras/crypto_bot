@@ -156,6 +156,19 @@ def updateUnick(uid, unick):
 		con.close()
 
 
+def updateUlang(uid, ulang):
+	con = sl.connect(path)
+	user = con.execute(f'SELECT * FROM USERS WHERE uid = {uid}').fetchone()
+
+	if user is None:
+		con.close()
+		return None
+	else:
+		con.execute(f"UPDATE USERS SET ulang = ? WHERE uid = ?", (ulang, uid))
+		con.commit()
+		con.close()
+
+
 def updateLogicTF(uid, utf, umin):
 	uid = int(uid)
 	con = sl.connect(path)

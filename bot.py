@@ -352,21 +352,46 @@ def bot_start():
 	@dp.message_handler(commands=['time'])
 	async def hour_cmd(message: types.Message):
 		if getUserStat(message.from_user.id) is not None:
-			if int(getUserStat(message.from_user.id)[3]) != 1:
-				if (not(message.text[6:].isalpha())) and (message.text[6:] != ''):
-					if float(message.text[6:]) > 0.01 and float(message.text[6:]) < 96:
-						old_code = getHours(message.from_user.id)
-						new_code = message.text[6:]
-						updateUinterval(message.from_user.id, new_code)
+			try:
+				await dp.throttle(message.text, rate=time_for_spam_ban)
+			except Throttled:
+				msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
 
-						await bot.send_message(message.from_user.id, f'<b>Интервал успешно изменен!</b>\n\n<b>Старый интервал:</b> {old_code}\n<b>Новый интервал:</b> {new_code}')
-						await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} поменял интервал</b>\n\n<i>Id: {message.from_user.id}</i>')
-					else:
-						await bot.send_message(message.from_user.id, '<b>Недопустимое значение!</b>')
-				else:
-					await bot.send_message(message.from_user.id, '<b>Недопустимое значение!</b>')
+				await message.reply(msg)
+				await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 			else:
-				await bot.send_message(message.from_user.id, '<b>Для начала выключите алгоритм!</b>')
+				if int(getUserStat(message.from_user.id)[3]) != 1:
+					if (not(message.text[6:].isalpha())) and (message.text[6:] != ''):
+						if float(message.text[6:]) > 0.01 and float(message.text[6:]) < 96:
+							old_code = getHours(message.from_user.id)
+							new_code = message.text[6:]
+							updateUinterval(message.from_user.id, new_code)
+
+							msg = f'<b>Интервал успешно изменен!</b>\n\n<b>Старый интервал:</b> {old_code}\n<b>Новый интервал:</b> {new_code}'
+							if getUserStat(message.from_user.id)[5] == 'en':
+								msg = f'<b>The interval has been successfully changed!</b>\n\n<b>Old interval:</b> {old_code}\n<b>New interval:</b> {new_code}'
+
+							await bot.send_message(message.from_user.id, msg)
+						else:
+							msg = '<b>Недопустимое значение!</b>'
+							if getUserStat(message.from_user.id)[5] == 'en':
+								msg = '<b>Invalid value!</b>'
+
+							await bot.send_message(message.from_user.id, msg)
+					else:
+						msg = '<b>Недопустимое значение!</b>'
+						if getUserStat(message.from_user.id)[5] == 'en':
+							msg = '<b>Invalid value!</b>'
+
+						await bot.send_message(message.from_user.id, msg)
+				else:
+					msg = '<b>Для начала выключите алгоритм!</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = '<b>First, turn off the algorithm!</b>'
+
+					await bot.send_message(message.from_user.id, msg)
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 
@@ -374,21 +399,46 @@ def bot_start():
 	@dp.message_handler(commands=['percent'])
 	async def procent_cmd(message: types.Message):
 		if getUserStat(message.from_user.id) is not None:
-			if int(getUserStat(message.from_user.id)[3]) != 1:
-				if (not(message.text[9:].isalpha())) and (message.text[9:] != ''):
-					if float(message.text[9:]) > 0.01 and float(message.text[9:]) < 100:
-						old_code = getProcent(message.from_user.id)
-						new_code = message.text[9:]
-						updateUprocent(message.from_user.id, new_code)
+			try:
+				await dp.throttle(message.text, rate=time_for_spam_ban)
+			except Throttled:
+				msg = f'<b>Подождите {time_for_spam_ban} секунды. Нельзя часто использовать эту команду.</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = f"<b>Wait {time_for_spam_ban} seconds. You can't use this command often.</b>"
 
-						await bot.send_message(message.from_user.id, f'<b>Процент успешно изменен!</b>\n\n<b>Старый процент:</b> {old_code}\n<b>Новый процент:</b> {new_code}')
-						await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} поменял процент</b>\n\n<i>Id: {message.from_user.id}</i>')
-					else:
-						await bot.send_message(message.from_user.id, '<b>Недопустимое значение!</b>')
-				else:
-					await bot.send_message(message.from_user.id, '<b>Недопустимое значение!</b>')
+				await message.reply(msg)
+				await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 			else:
-				await bot.send_message(message.from_user.id, '<b>Для начала выключите алгоритм!</b>')
+				if int(getUserStat(message.from_user.id)[3]) != 1:
+					if (not(message.text[9:].isalpha())) and (message.text[9:] != ''):
+						if float(message.text[9:]) > 0.01 and float(message.text[9:]) < 100:
+							old_code = getProcent(message.from_user.id)
+							new_code = message.text[9:]
+							updateUprocent(message.from_user.id, new_code)
+
+							msg = f'<b>Процент успешно изменен!</b>\n\n<b>Старый процент:</b> {old_code}\n<b>Новый процент:</b> {new_code}'
+							if getUserStat(message.from_user.id)[5] == 'en':
+								msg = f'<b>The percent has been successfully changed!</b>\n\n<b>Old percent:</b> {old_code}\n<b>New percent:</b> {new_code}'
+
+							await bot.send_message(message.from_user.id, msg)
+						else:
+							msg = '<b>Недопустимое значение!</b>'
+							if getUserStat(message.from_user.id)[5] == 'en':
+								msg = '<b>Invalid value!</b>'
+
+							await bot.send_message(message.from_user.id, msg)
+					else:
+						msg = '<b>Недопустимое значение!</b>'
+						if getUserStat(message.from_user.id)[5] == 'en':
+							msg = '<b>Invalid value!</b>'
+
+						await bot.send_message(message.from_user.id, msg)
+				else:
+					msg = '<b>Для начала выключите алгоритм!</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = '<b>First, turn off the algorithm!</b>'
+
+					await bot.send_message(message.from_user.id, msg)
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 
@@ -411,6 +461,14 @@ def bot_start():
 					msg = '<b>The keyboard has been updated!</b>'
 
 				await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'tools'))
+
+
+	@dp.message_handler(commands=['profile', 'профиль', 'me'])
+	async def profile_cmd(message: types.Message):
+		if getUserStat(message.from_user.id) is not None:
+			await getProfile(message, bot)
+		else:
+			await bot.send_message(message.from_user.id, access_denied)
 
 
 	@dp.message_handler(commands=['logic_on'])
@@ -943,6 +1001,24 @@ def bot_start():
 		await bot.send_message(callback_query.from_user.id, msg, reply_markup=keyboard)
 
 
+	@dp.callback_query_handler(lambda c: c.data == 'langru')
+	async def langru_cmd(callback_query: types.CallbackQuery):
+		msg = '<b>Вы поменяли язык на русский!</b>'
+		updateUlang(callback_query.from_user.id, 'ru')
+
+		await bot.answer_callback_query(callback_query.id)
+		await bot.send_message(callback_query.from_user.id, msg, reply_markup=getKeyboard(callback_query, 'main'))
+
+
+	@dp.callback_query_handler(lambda c: c.data == 'langen')
+	async def langru_cmd(callback_query: types.CallbackQuery):
+		msg = '<b>You have changed the language to English!</b>'
+		updateUlang(callback_query.from_user.id, 'en')
+
+		await bot.answer_callback_query(callback_query.id)
+		await bot.send_message(callback_query.from_user.id, msg, reply_markup=getKeyboard(callback_query, 'main'))
+
+
 	@dp.message_handler(commands=['help', 'instruction', 'info', 'помощь', 'хелп', 'инструкция'])
 	async def instruction_cmd(message: types.Message):
 		if getUserStat(message.from_user.id) is not None:
@@ -1174,6 +1250,9 @@ def bot_start():
 						msg = '<b>You have moved to the menu section!</b>'
 
 					await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'main'))
+
+			if msg == 'профиль' or msg == 'profile':
+				await getProfile(message, bot)
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 

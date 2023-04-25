@@ -151,15 +151,27 @@ class createScam(StatesGroup):
 	check = State()
 
 
+async def getProfile(message, bot):
+	key1 = types.InlineKeyboardButton('🇷🇺Russian', callback_data='langru')
+	key2 = types.InlineKeyboardButton('🇬🇧English', callback_data='langen')
+	keyboard = types.InlineKeyboardMarkup().add(key1, key2)
+
+	msg = f'<b>⚙️Ваш профиль:</b>\n\n<b>💳Подписка:</b> {None}\n<b>📝Язык:</b> {getUserStat(message.from_user.id)[5]}\n\n<b>🗓Дата регистрации:</b> {getUserStat(message.from_user.id)[2]}\n\n<i>Id: {message.from_user.id}</i>'
+	if getUserStat(message.from_user.id)[5] == 'en':
+		msg = f'<b>⚙️Your profile:</b>\n\n<b>💳Subscription:</b> {None}\n<b>📝Language:</b> {getUserStat(message.from_user.id)[5]}\n\n<b>🗓Date of registration:</b> {getUserStat(message.from_user.id)[2]}\n\n<i>Id: {message.from_user.id}</i>'
+
+	await bot.send_message(message.from_user.id, msg, reply_markup=keyboard)
+
+
 def getKeyboard(message, arg):
 	keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
 	if arg == 'main':
 		if getUserStat(message.from_user.id)[5] == 'en':
-			keyboard.row('Subscription', 'FAQ')
+			keyboard.row('Profile', 'FAQ')
 			keyboard.row('Tools')
 		else:
-			keyboard.row('Подписка', 'FAQ')
+			keyboard.row('Профиль', 'FAQ')
 			keyboard.row('Инструменты')
 	if arg == 'tools':
 		if getUserStat(message.from_user.id)[5] == 'en':

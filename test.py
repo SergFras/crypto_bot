@@ -12,15 +12,23 @@
 ... % 24h vol
 
 
+:45.981033
 
 
 
 
 
-
-
-
-
+# msg = f'<b>Всего монет:</b> <i>{len(cmd_coins)}</i>\n<b>Биржа:</b> <i>binance</i>\n\n'
+# if getUserStat(message.from_user.id)[5] == 'en':
+# 	msg = f'<b>Total coins:</b> <i>{len(cmd_coins)}</i>\n<b>Stock Market:</b> <i>binance</i>\n\n'
+# for i in range(len(cmd_coins) // 2):
+#     temp.append(f'<code>{cmd_coins[i][:-4]}: {vols[i]}%</code>')
+#
+# for i in range(len(cmd_coins) // 2, len(cmd_coins)):
+#     temp2.append(f'<code>{cmd_coins[i][:-4]}: {vols[i]}%</code>')
+#
+# for i in range(len(temp)):
+#     msg += f'<code>{spaces(temp, temp[i])} {temp2[i]}</code>\n'
 
 
 

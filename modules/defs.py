@@ -3,6 +3,7 @@ from aiogram import Bot, Dispatcher, executor, types
 from binance import Client, ThreadedWebsocketManager, ThreadedDepthCacheManager
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import StatesGroup, State
+from aiogram.utils.exceptions import Throttled
 import pandas as pd
 from config import *
 from database.db import *
@@ -167,7 +168,7 @@ async def getVol(message, bot, dp):
 		ticker_df = pd.DataFrame(tickers)
 		ticker_df.set_index('symbol', inplace=True)
 
-		vols, temp, temp2 = [], [], []
+		vols = {}
 		msg = f'<b>Всего монет:</b> <i>{len(cmd_coins)}</i>\n<b>Биржа:</b> <i>binance</i>\n\n'
 		if getUserStat(message.from_user.id)[5] == 'en':
 			msg = f'<b>Total coins:</b> <i>{len(cmd_coins)}</i>\n<b>Stock Market:</b> <i>binance</i>\n\n'
@@ -177,16 +178,30 @@ async def getVol(message, bot, dp):
 		    close_price = round(float(ticker_df.loc[coin]['lastPrice']), 3)
 		    vol = (open_price/close_price - 1) * 100
 
-		    vols.append(round(vol, 2))
+		    vols[coin] = round(vol, 2)
 
-		for i in range(len(cmd_coins) // 2):
-		    temp.append(f'<code>{cmd_coins[i][:-4]}: {vols[i]}%</code>')
+		vols = sorted(vols.items() , key=lambda t : t[1])
+		vols = list(reversed(vols))
 
-		for i in range(len(cmd_coins) // 2, len(cmd_coins)):
-		    temp2.append(f'<code>{cmd_coins[i][:-4]}: {vols[i]}%</code>')
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg += f'<b>Top {len(vols) // 2} most volatile coins:</b>\n'
+		else:
+			msg += f'<b>Топ {len(vols) // 2} самых волатильных монет:</b>\n'
 
-		for i in range(len(temp)):
-		    msg += f'<code>{spaces(temp, temp[i])} {temp2[i]}</code>\n'
+		for i in range(len(vols) // 2):
+			msg += f'<a href="https://www.binance.com/en/trade/{vols[i][0][:-4]}_BUSD">{vols[i][0][:-4]}</a> {vols[i][1]}% 24h vol\n'
+
+
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg += f'\n<b>Top {len(vols) // 2} most non-volatile coins:</b>\n'
+		else:
+			msg += f'\n<b>Топ {len(vols) // 2} самых неволатильных монет:</b>\n'
+
+		for i in range(len(vols) // 2, len(vols)):
+			msg += f'<a href="https://www.binance.com/en/trade/{vols[i][0][:-4]}_BUSD">{vols[i][0][:-4]}</a> {vols[i][1]}% 24h vol\n'
+
+		msg += f'\n\n<i>{str(datetime.datetime.now())[:-10]}</i>'
+
 
 		updateUnick(message.from_user.id, message.from_user.username)
 		await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'tools'))

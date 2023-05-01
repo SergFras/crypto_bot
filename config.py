@@ -1,10 +1,9 @@
-bot_version = '<b>v.4.1</b>\n\n<code>MACBETH CRYPTO BOT</code>'
+bot_version = '<b>v.4.2</b>\n\n<code>MACBETH CRYPTO BOT</code>'
 # https://t.me/macbeth_crypto_bot
 
 
 telegram_token = '5812953435:AAGv2qPkrpbAHnefWn-eSfbBJ1xKN-rehmw'
 # 6282420047:AAHnHweWAo4t0adcOKkPFaM7S-SKJe5NiDA
-
 binance_token = 'Wi5Pl9cUXGSqhYiieGrmyc6kAt4gh8SYYRvEOXNdnNpipYwDnTG5B0AZXUJR70yi'
 binance_secret = 'JKHfBqlbFs6RH6Hd06CjBnwEfCyeYpXLElDlMYewd0GQg0PU9LUUTWlCIdQPAprg'
 bybit_token = 'gPTNlbNqvHjI0r2qZP'
@@ -29,8 +28,8 @@ access_denied = "<b>У вас недостаточно прав для выпо�
 
 
 cmd_coins = ['BTCBUSD', 'ETHBUSD', 'BNBBUSD', 'XRPBUSD', 'ADABUSD', 'DOGEBUSD', 'MATICBUSD', 'SOLBUSD', 'DOTBUSD',
-'AVAXBUSD', 'APTBUSD', 'ARBUSDT', 'UNIBUSD', 'ATOMBUSD', 'NEARBUSD', 'UNIBUSD', 'LDOBUSD', 'HBARBUSD', 'APEBUSD',
-'OPBUSD', 'AAVEBUSD', 'WAVESBUSD']
+'AVAXBUSD', 'APTBUSD', 'ARBUSDT', 'ATOMBUSD', 'NEARBUSD', 'UNIBUSD', 'LDOBUSD', 'HBARBUSD', 'APEBUSD',
+'OPBUSD', 'AAVEBUSD', 'WAVESBUSD', 'LTCBUSD']
 
 binance_coins = ['BTCBUSD', 'APTBUSD', 'XRPBUSD', 'SOLBUSD', 'ZILBUSD', 'RSRBUSD', 'TRBBUSD', 'CRVBUSD', 'SXPBUSD',
 'UNIBUSD', 'BNBBUSD', 'ETHBUSD', 'RVNBUSD', 'XLMBUSD', 'ADABUSD', 'LTCBUSD', 'CHZBUSD', 'FTMBUSD', 'ONEBUSD', 'DOTBUSD',

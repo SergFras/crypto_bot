@@ -125,7 +125,7 @@ async def getCase(message, bot, dp):
 def bot_start():
 	logging.basicConfig(level=logging.INFO)
 	storage = MemoryStorage()
-	bot = Bot(token=telegram_token, parse_mode=types.ParseMode.HTML)
+	bot = Bot(token=telegram_token, parse_mode=types.ParseMode.HTML, disable_web_page_preview=True)
 	dp = Dispatcher(bot, storage=storage)
 
 

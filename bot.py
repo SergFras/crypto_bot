@@ -1260,6 +1260,9 @@ def bot_start():
 
 			if msg == 'волатильность' or msg == 'volatility':
 				await getVol(message, bot, dp)
+
+			if msg == 'faq':
+				await bot.send_message(message.from_user.id, 'This feature is still in development.', reply_markup=getKeyboard(message, 'main'))
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 

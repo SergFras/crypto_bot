@@ -162,7 +162,7 @@ async def getVol(message, bot, dp):
 		await message.reply(msg)
 		await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 	else:
-		await bot.send_message(message.from_user.id, 'This feature is still in development')
+		await bot.send_message(message.from_user.id, 'This feature is still in development.')
 
 
 async def getProfile(message, bot):

@@ -151,6 +151,20 @@ class createScam(StatesGroup):
 	check = State()
 
 
+async def getVol(message, bot, dp):
+	try:
+		await dp.throttle(message.text, rate=3)
+	except Throttled:
+		msg = f'<b>Подождите 3 секунды. Нельзя часто использовать эту команду.</b>'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = "<b>Wait 3 seconds. You can't use this command often.</b>"
+
+		await message.reply(msg)
+		await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
+	else:
+		await bot.send_message(message.from_user.id, 'This feature is still in development')
+
+
 async def getProfile(message, bot):
 	key1 = types.InlineKeyboardButton('🇷🇺Russian', callback_data='langru')
 	key2 = types.InlineKeyboardButton('🇬🇧English', callback_data='langen')
@@ -176,10 +190,10 @@ def getKeyboard(message, arg):
 	if arg == 'tools':
 		if getUserStat(message.from_user.id)[5] == 'en':
 			keyboard.row('Scam', 'Coins', 'Volatility')
-			keyboard.row('Algorithm', 'Portfolio')
+			keyboard.row('Algorithm', 'Portfolio', 'Menu')
 		else:
 			keyboard.row('Скам', 'Койны', 'Волатильность')
-			keyboard.row('Алгоритм', 'Портфель')
+			keyboard.row('Алгоритм', 'Портфель', 'Меню')
 	if arg == 'logic':
 		if getUserStat(message.from_user.id)[5] == 'en':
 			keyboard.row('On', 'Off')

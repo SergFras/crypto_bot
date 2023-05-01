@@ -1257,6 +1257,9 @@ def bot_start():
 
 			if msg == 'профиль' or msg == 'profile':
 				await getProfile(message, bot)
+
+			if msg == 'волатильность' or msg == 'volatility':
+				await getVol(message, bot, dp)
 		else:
 			await bot.send_message(message.from_user.id, access_denied)
 

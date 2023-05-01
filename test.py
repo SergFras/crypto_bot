@@ -1,15 +1,30 @@
-if os.path.exists(f'allcases/{message.from_user.id}/{message.from_user.id}.txt'):
-    data, msg = [], '<b>Ваш портфель:</b>\n\n'
-    with open(f'allcases/{message.from_user.id}/{message.from_user.id}.txt', 'r') as f:
-        tmp = f.readlines()
+with open('test.txt') as f:
+    coins = f.readlines()
 
-        for i in tmp:
-            i = i.replace('\n', '')
-            data.append(list(i.split(' ')))
-    for i in data:
-        msg += f'<b>{i[0]}</b> - ${i[1]}<i>({i[2]})</i>\n'
+    for i in range(len(coins)):
+        coins[i] = coins[i].replace('https://www.binance.com/en/trade/', '')
+        coins[i] = coins[i].replace('\n', '')
+        coins[i] = coins[i].replace('/', '')
+        coins[i] = coins[i].replace('_', '')
+    print(coins)
+    print(len(coins))
 
-    await bot.send_message(message.from_user.id, '<b>Инструкция:</b>\n\n<code>/case create</code> - создать новый портфель\n<code>/case update</code> - добавить новые монеты\n<code>/case clear</code> - удалить портфель\n\n<i>Нажмите, чтобы скопировать.</i>')
-    await bot.send_message(message.from_user.id, msg)
-else:
-    await bot.send_message(message.from_user.id, '<b>Портфель еще не создан!</b>\n\n<b>Введите:</b> <code>/case create</code>\n<i>Нажмите, чтобы скопировать.</i>')
+binance_coins = ['BTCBUSD', 'APTBUSD', 'XRPBUSD', 'SOLBUSD', 'ZILBUSD', 'RSRBUSD', 'TRBBUSD', 'CRVBUSD', 'SXPBUSD',
+'UNIBUSD', 'BNBBUSD', 'ETHBUSD', 'RVNBUSD', 'XLMBUSD', 'ADABUSD', 'LTCBUSD', 'CHZBUSD', 'FTMBUSD', 'ONEBUSD', 'DOTBUSD',
+'ZECBUSD', 'GMTBUSD', 'ATOMBUSD', 'KAVABUSD', 'FLOWBUSD', 'CELOBUSD', 'DOGEBUSD', 'MASKBUSD', 'DASHBUSD', 'BANDBUSD',
+'ALGOBUSD', 'MATICBUSD', 'WAVESBUSD', 'SUSHIBUSD', 'IOTABUSD', 'JASMYBUSD', 'LEVERBUSD',
+'GRTBUSD', 'INJBUSD', 'IMXBUSD', 'MAGICBUSD', 'RNDRBUSD', 'CHRBUSD', 'ARPABUSD', 'UNFIBUSD', 'EOSBUSD', 'HBARBUSD', 'REEFBUSD',
+'BCHABCBUSD', 'LINKBUSD', 'ETCBUSD', 'TRXBUSD', 'BCHBUSD', 'QTUMBUSD', 'VETBUSD', 'EURBUSD', 'BULLBUSD', 'BEARBUSD', 'ETHBULLBUSD',
+'ETHBEARBUSD', 'ICXBUSD', 'BTSBUSD', 'BNTBUSD', 'NEOBUSD', 'XTZBUSD', 'EOSBULLBUSD', 'EOSBEARBUSD', 'XRPBULLBUSD', 'XRPBEARBUSD',
+'BATBUSD', 'ENJBUSD', 'NANOBUSD', 'ONTBUSD', 'STRATBUSD', 'AIONBUSD', 'BTTBUSD', 'TOMOBUSD', 'XMRBUSD', 'BNBBULLBUSD', 'BNBBEARBUSD',
+'DATABUSD', 'CTSIBUSD', 'ERDBUSD', 'WRXBUSD', 'KNCBUSD', 'REPBUSD', 'LRCBUSD', 'IQBUSD', 'GBPBUSD', 'DGBBUSD', 'COMPBUSD', 'BKRWBUSD',
+'SNXBUSD', 'VTHOBUSD', 'DCRBUSD', 'STORJBUSD', 'IRISBUSD', 'MKRBUSD', 'DAIBUSD', 'RUNEBUSD', 'MANABUSD', 'LENDBUSD', 'ZRXBUSD', 'AUDBUSD',
+'FIOBUSD', 'AVABUSD', 'BALBUSD', 'YFIBUSD', 'BLZBUSD', 'KMDBUSD', 'JSTBUSD', 'SRMBUSD', 'ANTBUSD', 'SANDBUSD', 'OCEANBUSD', 'NMRBUSD',
+'LUNABUSD', 'IDEXBUSD', 'PAXGBUSD', 'WNXMBUSD', 'BZRXBUSD', 'YFIIBUSD', 'KSMBUSD', 'EGLDBUSD', 'DIABUSD', 'BELBUSD', 'SWRVBUSD', 'WINGBUSD',
+'CREAMBUSD', 'AVAXBUSD', 'FLMBUSD', 'CAKEBUSD', 'XVSBUSD', 'ALPHABUSD', 'VIDTBUSD', 'AAVEBUSD', 'NEARBUSD', 'FILBUSD', 'AERGOBUSD', 'AUDIOBUSD',
+'CTKBUSD', 'BOTBUSD', 'KP3RBUSD', 'AXSBUSD', 'HARDBUSD', 'DNTBUSD', 'CVPBUSD', 'STRAXBUSD', 'FORBUSD', 'FRONTBUSD', 'BCHABUSD', 'ROSEBUSD',
+'SYSBUSD', 'HEGICBUSD', 'PROMBUSD', 'SKLBUSD', 'COVERBUSD', 'GHSTBUSD', 'DFBUSD', 'JUVBUSD', 'PSGBUSD', 'BTCSTBUSD', 'TRUBUSD', 'DEXEBUSD',
+'USDCBUSD', 'TUSDBUSD', 'PAXBUSD', 'CKBBUSD', 'TWTBUSD', 'LITBUSD', 'SFPBUSD', 'FXSBUSD', 'DODOBUSD', 'BAKEBUSD', 'UFTBUSD', '1INCHBUSD',
+'IOSTBUSD', 'OMGBUSD', 'ACMBUSD', 'AUCTIONBUSD', 'PHABUSD', 'TVKBUSD', 'BADGERBUSD', 'FISBUSD', 'OMBUSD', 'PONDBUSD', 'DEGOBUSD', 'ALICEBUSD',
+'BIFIBUSD', 'LINABUSD', 'PERPBUSD', 'RAMPBUSD', 'SUPERBUSD', 'CFXBUSD', 'XVGBUSD', 'EPSBUSD', 'AUTOBUSD', 'TKOBUSD', 'TLMBUSD', 'BTGBUSD',
+'ARBUSDT', 'LDOBUSD', 'APEBUSD', 'OPBUSD']

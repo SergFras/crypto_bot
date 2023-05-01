@@ -74,7 +74,11 @@ async def getCase(message, bot, dp):
 			await bot.send_message(message.from_user.id, msg)
 			await deleteCase.name.set()
 		elif arg == 'help':
-			await bot.send_message(message.from_user.id, '<b>Инструкция:</b>\n\n<code>/case create</code> - создать новый портфель\n<code>/case update</code> - добавить новые монеты\n<code>/case delete</code> - удалить портфель\n\n<i>Нажмите, чтобы скопировать.</i>')
+			msg = '<b>Инструкция:</b>\n\n<code>/case create</code> - создать новый портфель\n<code>/case update</code> - добавить новые монеты\n<code>/case delete</code> - удалить портфель\n\n<i>Нажмите, чтобы скопировать.</i>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>Instruction:</b>\n\n<code>/case create</code> - create a new portfolio\n<code>/case update</code> - add new coins\n<code>/case delete</code> - delete portfolio\n\n<i>Click to copy.</i>'
+
+			await bot.send_message(message.from_user.id, msg)
 		else:
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 

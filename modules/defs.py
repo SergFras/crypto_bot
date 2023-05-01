@@ -162,7 +162,34 @@ async def getVol(message, bot, dp):
 		await message.reply(msg)
 		await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 	else:
-		await bot.send_message(message.from_user.id, 'This feature is still in development.')
+		client = Client(binance_token, binance_secret)
+		tickers = client.get_ticker()
+		ticker_df = pd.DataFrame(tickers)
+		ticker_df.set_index('symbol', inplace=True)
+
+		vols, temp, temp2 = [], [], []
+		msg = f'<b>Всего монет:</b> <i>{len(cmd_coins)}</i>\n<b>Биржа:</b> <i>binance</i>\n\n'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg = f'<b>Total coins:</b> <i>{len(cmd_coins)}</i>\n<b>Stock Market:</b> <i>binance</i>\n\n'
+
+		for coin in cmd_coins:
+		    open_price = round(float(ticker_df.loc[coin]['openPrice']), 3)
+		    close_price = round(float(ticker_df.loc[coin]['lastPrice']), 3)
+		    vol = (open_price/close_price - 1) * 100
+
+		    vols.append(round(vol, 2))
+
+		for i in range(len(cmd_coins) // 2):
+		    temp.append(f'<code>{cmd_coins[i][:-4]}: {vols[i]}%</code>')
+
+		for i in range(len(cmd_coins) // 2, len(cmd_coins)):
+		    temp2.append(f'<code>{cmd_coins[i][:-4]}: {vols[i]}%</code>')
+
+		for i in range(len(temp)):
+		    msg += f'<code>{spaces(temp, temp[i])} {temp2[i]}</code>\n'
+
+		updateUnick(message.from_user.id, message.from_user.username)
+		await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'tools'))
 
 
 async def getProfile(message, bot):

@@ -27,9 +27,8 @@ time_frades_precents = [0.6, 1.8, 2.55, 3.1]
 access_denied = "<b>У вас недостаточно прав для выполнения данной команды!\nYou don't have enough rights to execute this command!</b>"
 
 
-cmd_coins = ['BTCBUSD', 'ETHBUSD', 'BNBBUSD', 'XRPBUSD', 'ADABUSD', 'DOGEBUSD', 'MATICBUSD', 'SOLBUSD', 'DOTBUSD',
-'AVAXBUSD', 'APTBUSD', 'ARBUSDT', 'ATOMBUSD', 'NEARBUSD', 'UNIBUSD', 'LDOBUSD', 'HBARBUSD', 'APEBUSD',
-'OPBUSD', 'AAVEBUSD', 'WAVESBUSD', 'LTCBUSD']
+cmd_coins = ['BTCBUSD', 'ETHBUSD', 'BNBBUSD', 'XRPBUSD', 'ADABUSD', 'SOLBUSD', 'DOTBUSD',
+'APTBUSD', 'ARBUSDT', 'UNIBUSD', 'LDOBUSD', 'OPBUSD', 'APEBUSD', 'LTCBUSD', 'HBARBUSD', 'AAVEBUSD', 'AVAXBUSD', 'DOGEBUSD', 'ATOMBUSD', 'NEARBUSD', 'WAVESBUSD', 'MATICBUSD']
 
 binance_coins = ['BTCBUSD', 'APTBUSD', 'XRPBUSD', 'SOLBUSD', 'ZILBUSD', 'RSRBUSD', 'TRBBUSD', 'CRVBUSD', 'SXPBUSD',
 'UNIBUSD', 'BNBBUSD', 'ETHBUSD', 'RVNBUSD', 'XLMBUSD', 'ADABUSD', 'LTCBUSD', 'CHZBUSD', 'FTMBUSD', 'ONEBUSD', 'DOTBUSD',

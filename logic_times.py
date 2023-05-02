@@ -19,10 +19,7 @@ def send_bot(utf, uhour, uprocent):
 		for i in range(len(res)):
 			msg += str(res[i])
 
-		if getUserStat(message.from_user.id)[5] == 'en':
-			msg += f'\n\n<i>Interval: {uhour} min</i>'
-		else:
-			msg += f'\n\n<i>Интервал: {uhour} мин</i>'
+		msg += f'\n\n<i>Interval: {uhour} min</i>'
 
 		for j in getAllStat():
 			if j[9] and (utf == 'u1m'):

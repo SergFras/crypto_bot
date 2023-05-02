@@ -214,7 +214,6 @@ async def getVol(message, bot, dp):
 			msg += f'\n\n<i>Date: {str(datetime.datetime.now())[:-10]}</i>'
 		else:
 			msg += f'\n\n<i>Дата: {str(datetime.datetime.now())[:-10]}</i>'
-		# print(round(float(ticker_df.loc['BTCBUSD']["volume"])), round(float(ticker_df.loc['BTCBUSD']["quoteVolume"])))
 
 		updateUnick(message.from_user.id, message.from_user.username)
 		await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'tools'))

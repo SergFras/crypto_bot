@@ -136,8 +136,6 @@ def bot_start():
 	#
 
 
-
-
 	@dp.message_handler(commands=['admin', 'panel', 'панель'])
 	async def admin_panel_cmd(message: types.Message):
 		if getUserStat(message.from_user.id) is not None:

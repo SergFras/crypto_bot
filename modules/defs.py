@@ -169,36 +169,42 @@ async def getVol(message, bot, dp):
 		ticker_df.set_index('symbol', inplace=True)
 
 		vols = {}
-		msg = f'<b>Всего монет:</b> <i>{len(cmd_coins)}</i>\n<b>Биржа:</b> <i>binance</i>\n\n'
+		msg = f'<b>Всего монет:</b> <i>{len(binance_coins)}</i>\n<b>Биржа:</b> <i>binance</i>\n\n'
 		if getUserStat(message.from_user.id)[5] == 'en':
-			msg = f'<b>Total coins:</b> <i>{len(cmd_coins)}</i>\n<b>Stock Market:</b> <i>binance</i>\n\n'
+			msg = f'<b>Total coins:</b> <i>{len(binance_coins)}</i>\n<b>Stock Market:</b> <i>binance</i>\n\n'
 
-		for coin in cmd_coins:
-		    open_price = round(float(ticker_df.loc[coin]['openPrice']), 3)
-		    close_price = round(float(ticker_df.loc[coin]['lastPrice']), 3)
-		    vol = (open_price/close_price - 1) * 100
+		for coin in binance_coins:
+			open_price = round(float(ticker_df.loc[coin]['openPrice']), 3)
+			close_price = round(float(ticker_df.loc[coin]['lastPrice']), 3)
 
-		    vols[coin] = round(vol, 2)
+			if close_price != 0:
+				vol = (open_price/close_price - 1) * 100
+			else:
+				vol = 0
+
+			vols[coin] = round(vol, 2)
 
 		vols = sorted(vols.items() , key=lambda t : t[1])
-		vols = list(reversed(vols))
-
-		if getUserStat(message.from_user.id)[5] == 'en':
-			msg += f'<b>Top {len(vols) // 2} most volatile coins:</b>\n'
-		else:
-			msg += f'<b>Топ {len(vols) // 2} самых волатильных монет:</b>\n'
-
-		for i in range(len(vols) // 2):
-			msg += f'<a href="https://www.binance.com/en/trade/{vols[i][0][:-4]}_BUSD">{vols[i][0][:-4]}</a> {vols[i][1]}% 24h vol\n'
+		vols_max = list(reversed(vols))
+		vols_min = vols
 
 
 		if getUserStat(message.from_user.id)[5] == 'en':
-			msg += f'\n<b>Top {len(vols) // 2} most non-volatile coins:</b>\n'
+			msg += f'<b>Top 10 most volatile coins:</b>\n'
 		else:
-			msg += f'\n<b>Топ {len(vols) // 2} самых неволатильных монет:</b>\n'
+			msg += f'<b>Топ 10 самых волатильных монет:</b>\n'
 
-		for i in range(len(vols) // 2, len(vols)):
-			msg += f'<a href="https://www.binance.com/en/trade/{vols[i][0][:-4]}_BUSD">{vols[i][0][:-4]}</a> {vols[i][1]}% 24h vol\n'
+		for i in range(10):
+			msg += f'<a href="https://www.binance.com/en/trade/{vols_max[i][0][:-4]}_BUSD">{vols_max[i][0][:-4]}</a> {vols_max[i][1]}% 24h vol ${round(float(ticker_df.loc[vols_max[i][0]]["volume"]))}\n'
+
+
+		# if getUserStat(message.from_user.id)[5] == 'en':
+		# 	msg += f'\n<b>Top {len(vols) // 2} most non-volatile coins:</b>\n'
+		# else:
+		# 	msg += f'\n<b>Топ {len(vols) // 2} самых неволатильных монет:</b>\n'
+		#
+		# for i in range(len(vols) // 2, len(vols)):
+		# 	msg += f'<a href="https://www.binance.com/en/trade/{vols[i][0][:-4]}_BUSD">{vols[i][0][:-4]}</a> {vols[i][1]}% 24h vol ${round(float(ticker_df.loc[vols[i][0]]["volume"]))}\n'
 
 		msg += f'\n\n<i>{str(datetime.datetime.now())[:-10]}</i>'
 

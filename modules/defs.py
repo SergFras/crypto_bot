@@ -169,9 +169,9 @@ async def getVol(message, bot, dp):
 		ticker_df.set_index('symbol', inplace=True)
 
 		vols = {}
-		msg = f'<b>Всего монет:</b> <i>{len(binance_coins)}</i>\n<b>Биржа:</b> <i>binance</i>\n\n'
+		msg = f'<b>Всего монет для проверки:</b> <i>{len(binance_coins)}</i>\n<b>Биржа:</b> <i>binance</i>\n\n'
 		if getUserStat(message.from_user.id)[5] == 'en':
-			msg = f'<b>Total coins:</b> <i>{len(binance_coins)}</i>\n<b>Stock Market:</b> <i>binance</i>\n\n'
+			msg = f'<b>Total coins to check:</b> <i>{len(binance_coins)}</i>\n<b>Stock Market:</b> <i>binance</i>\n\n'
 
 		for coin in binance_coins:
 			open_price = round(float(ticker_df.loc[coin]['openPrice']), 3)

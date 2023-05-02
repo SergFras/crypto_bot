@@ -180,13 +180,13 @@ async def getVol(message, bot, dp):
 			if close_price != 0:
 				vol = (open_price/close_price - 1) * 100
 			else:
-				vol = 0
+				vol = 0.1
 
 			vols[coin] = round(vol, 2)
 
 		vols = sorted(vols.items() , key=lambda t : t[1])
 		vols_max = list(reversed(vols))
-		vols_min = vols
+		vols_min = []
 
 
 		if getUserStat(message.from_user.id)[5] == 'en':
@@ -198,15 +198,22 @@ async def getVol(message, bot, dp):
 			msg += f'<a href="https://www.binance.com/en/trade/{vols_max[i][0][:-4]}_BUSD">{vols_max[i][0][:-4]}</a> {vols_max[i][1]}% 24h vol ${round(float(ticker_df.loc[vols_max[i][0]]["volume"]))}\n'
 
 
-		# if getUserStat(message.from_user.id)[5] == 'en':
-		# 	msg += f'\n<b>Top {len(vols) // 2} most non-volatile coins:</b>\n'
-		# else:
-		# 	msg += f'\n<b>Топ {len(vols) // 2} самых неволатильных монет:</b>\n'
-		#
-		# for i in range(len(vols) // 2, len(vols)):
-		# 	msg += f'<a href="https://www.binance.com/en/trade/{vols[i][0][:-4]}_BUSD">{vols[i][0][:-4]}</a> {vols[i][1]}% 24h vol ${round(float(ticker_df.loc[vols[i][0]]["volume"]))}\n'
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg += f'\n<b>Top 10 most non-volatile coins:</b>\n'
+		else:
+			msg += f'\n<b>Топ 10 самых неволатильных монет:</b>\n'
 
-		msg += f'\n\n<i>{str(datetime.datetime.now())[:-10]}</i>'
+		for i in range(54, 64):
+			vols_min.append((vols[i][0], vols[i][1]))
+		vols_min = list(reversed(vols_min))
+
+		for i in range(len(vols_min)):
+			msg += f'<a href="https://www.binance.com/en/trade/{vols_min[i][0][:-4]}_BUSD">{vols_min[i][0][:-4]}</a> {vols_min[i][1]}% 24h vol ${round(float(ticker_df.loc[vols_min[i][0]]["volume"]))}\n'
+
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg += f'\n\n<i>Date: {str(datetime.datetime.now())[:-10]}</i>'
+		else:
+			msg += f'\n\n<i>Дата: {str(datetime.datetime.now())[:-10]}</i>'
 
 
 		updateUnick(message.from_user.id, message.from_user.username)

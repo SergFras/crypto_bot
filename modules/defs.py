@@ -215,7 +215,7 @@ async def getVol(message, bot, dp):
 		if getUserStat(message.from_user.id)[5] == 'en':
 			msg += f'\n\n<i>All information is taken for the 24 hour range!\nDate: {str(datetime.datetime.now())[:-10]}</i>'
 		else:
-			msg += f'\n\n<i>Дата: {str(datetime.datetime.now())[:-10]}</i>'
+			msg += f'\n\n<i>Вся информация берется за 24-часовой диапазон!\nДата: {str(datetime.datetime.now())[:-10]}</i>'
 
 		updateUnick(message.from_user.id, message.from_user.username)
 		await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'tools'))
@@ -296,6 +296,11 @@ async def getCoins(message, bot, value):
 
 		for i in range(len(temp)):
 			msg += f'<code>{spaces(temp, temp[i])} {temp2[i]}</code>\n'
+
+		if getUserStat(message.from_user.id)[5] == 'en':
+			msg += f'\n\n<i>Date: {str(datetime.datetime.now())[:-10]}</i>'
+		else:
+			msg += f'\n\n<i>Дата: {str(datetime.datetime.now())[:-10]}</i>'
 
 	if value == 'bybit':
 		prices = getPrice(bybit_coins)

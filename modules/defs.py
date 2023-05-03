@@ -178,7 +178,8 @@ async def getVol(message, bot, dp):
 			close_price = round(float(ticker_df.loc[coin]['lastPrice']), 3)
 
 			if close_price != 0:
-				vol = (open_price/close_price - 1) * 100
+				# vol = (open_price/close_price - 1) * 100
+				vol = ((open_price - close_price)/close_price) * 100
 			else:
 				vol = 0.1
 
@@ -188,30 +189,31 @@ async def getVol(message, bot, dp):
 		vols_max = list(reversed(vols))
 		vols_min = []
 
-
 		if getUserStat(message.from_user.id)[5] == 'en':
-			msg += f'<b>Top 10 most volatile coins:</b>\n'
+			msg += f'<b>Top 15 most volatile coins:</b>\n'
 		else:
-			msg += f'<b>Топ 10 самых волатильных монет:</b>\n'
+			msg += f'<b>Топ 15 самых волатильных монет:</b>\n'
 
-		for i in range(10):
-			msg += f'<a href="https://www.binance.com/en/trade/{vols_max[i][0][:-4]}_BUSD">{vols_max[i][0][:-4]}</a> {vols_max[i][1]}% 24h vol ${round(float(ticker_df.loc[vols_max[i][0]]["quoteVolume"]))}\n'
+		temp, temp2 = [], []
 
+		for i in range(15):
+			coin_price = round(float(ticker_df.loc[vols_max[i][0]]["quoteVolume"]))
+
+			if coin_price >= 1000000:
+				coin_price = f'{round(coin_price/1000000, 2)}M'
+				temp2.append(coin_price)
+			else:
+				coin_price = f'{round(coin_price/1000)}K'
+				temp2.append(coin_price)
+
+			temp.append(f'<code>{vols_max[i][0][:-4]}: {vols_max[i][1]}%</code>')
+			# msg += f'<a href="https://www.binance.com/en/trade/{vols_max[i][0][:-4]}_BUSD">{vols_max[i][0][:-4]}</a>  <code>{vols_max[i][1]}% 24h vol ${coin_price}</code>\n'
+
+		for i in range(len(temp)):
+			msg += f'<code>{spaces(temp, temp[i])}   vol: {temp2[i]}</code>\n'
 
 		if getUserStat(message.from_user.id)[5] == 'en':
-			msg += f'\n<b>Top 10 most non-volatile coins:</b>\n'
-		else:
-			msg += f'\n<b>Топ 10 самых неволатильных монет:</b>\n'
-
-		for i in range(60, 70):
-			vols_min.append((vols[i][0], vols[i][1]))
-		vols_min = list(reversed(vols_min))
-
-		for i in range(len(vols_min)):
-			msg += f'<a href="https://www.binance.com/en/trade/{vols_min[i][0][:-4]}_BUSD">{vols_min[i][0][:-4]}</a> {vols_min[i][1]}% 24h vol ${round(float(ticker_df.loc[vols_min[i][0]]["quoteVolume"]))}\n'
-
-		if getUserStat(message.from_user.id)[5] == 'en':
-			msg += f'\n\n<i>Date: {str(datetime.datetime.now())[:-10]}</i>'
+			msg += f'\n\n<i>All information is taken for the 24 hour range!\nDate: {str(datetime.datetime.now())[:-10]}</i>'
 		else:
 			msg += f'\n\n<i>Дата: {str(datetime.datetime.now())[:-10]}</i>'
 

@@ -18,16 +18,22 @@ while True:
 	now = time.localtime()
 
 	if now.tm_hour == 3 and now.tm_min == 58:
+		print('restart 3:58')
 		restart()
 	if now.tm_hour == 7 and now.tm_min == 58:
+		print('restart 7:58')
 		restart()
 	if now.tm_hour == 11 and now.tm_min == 58:
+		print('restart 11:58')
 		restart()
 	if now.tm_hour == 15 and now.tm_min == 58:
+		print('restart 15:58')
 		restart()
 	if now.tm_hour == 19 and now.tm_min == 58:
+		print('restart 19:58')
 		restart()
 	if now.tm_hour == 23 and now.tm_min == 58:
+		print('restart 23:58')
 		restart()
 
 	time.sleep(35)

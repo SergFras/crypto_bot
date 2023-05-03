@@ -53,13 +53,22 @@ async def getCase(message, bot, dp):
 			os.mkdir(f'allcases/{message.from_user.id}/')
 
 		if arg == 'create':
-			msg = '<b>Введите id портфеля:</b>'
+			msg = '<b>Введите название портфеля:</b>'
 			if getUserStat(message.from_user.id)[5] == 'en':
-				msg = "<b>Enter the portfolio id:</b>"
+				msg = "<b>Enter the portfolio name:</b>"
 
 			await bot.send_message(message.from_user.id, msg)
 			await createCase.name.set()
 		elif arg == 'update':
+			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
+			msg = '<b>Текущие id портфелей:</b>\n\n'
+
+			for path in filenames:
+				msg += f'<code>{path[:-4]}</code>\n'
+
+			await bot.send_message(message.from_user.id, msg)
+
+
 			msg = '<b>Введите id портфеля:</b>'
 			if getUserStat(message.from_user.id)[5] == 'en':
 				msg = "<b>Enter the portfolio id:</b>"
@@ -67,6 +76,15 @@ async def getCase(message, bot, dp):
 			await bot.send_message(message.from_user.id, msg)
 			await updateCase.name.set()
 		elif arg == 'clear' or arg == 'delete' or arg == 'remove':
+			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
+			msg = '<b>Текущие id портфелей:</b>\n\n'
+
+			for path in filenames:
+				msg += f'<code>{path[:-4]}</code>\n'
+
+			await bot.send_message(message.from_user.id, msg)
+
+
 			msg = '<b>Введите id портфеля:</b>'
 			if getUserStat(message.from_user.id)[5] == 'en':
 				msg = "<b>Enter the portfolio id:</b>"
@@ -121,7 +139,7 @@ async def getCase(message, bot, dp):
 				if getUserStat(message.from_user.id)[5] == 'en':
 					msg = '<b>The portfolio has not been created yet!</b>\n\n<b>Enter:</b> <code>/case create</code>\n\n<i>Click to copy.</i>'
 
-				updateUportid(message.from_user.id, 0)
+				updateUportid(message.from_user.id, 1)
 				await bot.send_message(message.from_user.id, msg)
 
 
@@ -687,6 +705,7 @@ def bot_start():
 
 				await bot.send_message(message.from_user.id, msg)
 				updateUportid(message.from_user.id, int(getUserStat(message.from_user.id)[13]) + 1)
+				await getCase(message, bot, dp)
 				await state.finish()
 
 
@@ -709,6 +728,7 @@ def bot_start():
 					msg = f'<b>Your portfolio (id: {message.text}) has been deleted!</b>'
 
 				await bot.send_message(message.from_user.id, msg)
+				await getCase(message, bot, dp)
 			await state.finish()
 
 
@@ -793,10 +813,10 @@ def bot_start():
 			else:
 				old_data = None
 
-				with open(f'allcases/{message.from_user.id}/{getUserStat(message.from_user.id)[13]}.txt', 'r') as f:
+				with open(f'allcases/{message.from_user.id}/{data["name"]}.txt', 'r') as f:
 					old_data = f.read()
 
-				with open(f'allcases/{message.from_user.id}/{getUserStat(message.from_user.id)[13]}.txt', 'w') as f:
+				with open(f'allcases/{message.from_user.id}/{data["name"]}.txt', 'w') as f:
 					f.write(f'{old_data}\n{data["coin"]} {data["price"]} {message.text}')
 
 				msg = f'<b>Ваш портфель (id: {data["name"]}) успешно обновлен!</b>'
@@ -804,6 +824,7 @@ def bot_start():
 					msg = f'<b>Your portfolio (id: {data["name"]}) has been successfully updated!</b>'
 
 				await bot.send_message(message.from_user.id, msg)
+				await getCase(message, bot, dp)
 				await state.finish()
 
 

@@ -706,15 +706,14 @@ def bot_start():
 					msg = '<b>There is no such category!</b>'
 
 				await message.answer(msg)
-				return
+			else:
+				os.remove(f'allcases/{message.from_user.id}/{message.text}.txt')
 
-			os.remove(f'allcases/{message.from_user.id}/{message.text}.txt')
+				msg = f'<b>Ваш портфель ({message.text}) удален!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = f'<b>Your portfolio ({message.text}) has been deleted!</b>'
 
-			msg = f'<b>Ваш портфель ({message.text}) удален!</b>'
-			if getUserStat(message.from_user.id)[5] == 'en':
-				msg = f'<b>Your portfolio ({message.text}) has been deleted!</b>'
-
-			await bot.send_message(message.from_user.id, msg)
+				await bot.send_message(message.from_user.id, msg)
 			await state.finish()
 
 
@@ -728,18 +727,18 @@ def bot_start():
 				msg = '<b>There is no such category!</b>'
 
 			await message.answer(msg)
-			return
+			await state.finish()
+		else:
+			async with state.proxy() as data:
+				data['name'] = message.text
 
-		async with state.proxy() as data:
-			data['name'] = message.text
+			await updateCase.next()
+			msg = '<b>Введите тикер:</b>'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>Enter the ticker:</b>'
 
-		await updateCase.next()
-		msg = '<b>Введите тикер:</b>'
-		if getUserStat(message.from_user.id)[5] == 'en':
-			msg = '<b>Enter the ticker:</b>'
-
-		await bot.send_message(message.from_user.id, msg)
-		await updateCase.coin.set()
+			await bot.send_message(message.from_user.id, msg)
+			await updateCase.coin.set()
 
 
 	@dp.message_handler(state=updateCase.coin)

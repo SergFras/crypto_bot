@@ -57,3 +57,50 @@ for i in range(len(coins)):
 # 'ZECBUSD', 'GMTBUSD', 'ATOMBUSD', 'KAVABUSD', 'FLOWBUSD', 'CELOBUSD', 'DOGEBUSD', 'MASKBUSD', 'DASHBUSD', 'BANDBUSD',
 # 'ALGOBUSD', 'MATICBUSD', 'WAVESBUSD', 'SUSHIBUSD', 'IOTABUSD', 'JASMYBUSD', 'LEVERBUSD',
 # 'GRTBUSD', 'INJBUSD', 'IMXBUSD', 'MAGICBUSD', 'RNDRBUSD', 'CHRBUSD', 'ARPABUSD', 'UNFIBUSD', 'EOSBUSD', 'HBARBUSD', 'REEFBUSD']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# CASE
+
+# data, msg = [], '<b>📕Ваш портфель:</b>\n\n'
+#
+# if getUserStat(message.from_user.id)[5] == 'en':
+#     msg = '<b>📕Status of your portfolio:</b>\n\n'
+#
+# for path in filenames:
+#     with open(f'allcases/{message.from_user.id}/{path}') as f:
+#         tmp = [path[:-4], f.readlines()]
+#         data.append(tmp)
+#
+# for info in data:
+#     values = []
+#     msg += f'<b>{info[0]}:</b>\n'
+#
+#     for i in info[1]:
+#         i = i.replace('\n', '')
+#         values.append(list(i.split(' ')))
+#     for i in values:
+#         price = checkPrice(i[0])
+#
+#         if price != 'Error':
+#             msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> ${price}\n<b>📉24h:</b> {None}%\n<b>💳Hold:</b> {i[2]} (${round(float(i[2]) * price, 3)})\n<b>⚖️AvgBuy:</b> ${i[1]}\n<b>📈P&L:</b> ${round(price - float(i[1]), 3)} ({None}%)\n\n'
+#         else:
+#             if getUserStat(message.from_user.id)[5] == 'en':
+#                 msg += f'<i>{i[0]}</i>\n<b>This coin is not found on binance!</b>\n\n'
+#             else:
+#                 msg += f'<i>{i[0]}</i>\n<b>Такого койна нет на бинансе!</b>\n\n'
+#     msg += '\n'
+# msg += '\n<code>/case help</code>'
+#
+# await bot.send_message(message.from_user.id, msg)

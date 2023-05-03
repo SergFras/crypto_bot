@@ -53,23 +53,23 @@ async def getCase(message, bot, dp):
 			os.mkdir(f'allcases/{message.from_user.id}/')
 
 		if arg == 'create':
-			msg = '<b>Введите название портфеля:</b>'
+			msg = '<b>Введите id портфеля:</b>'
 			if getUserStat(message.from_user.id)[5] == 'en':
-				msg = "<b>Enter the portfolio name:</b>"
+				msg = "<b>Enter the portfolio id:</b>"
 
 			await bot.send_message(message.from_user.id, msg)
 			await createCase.name.set()
 		elif arg == 'update':
-			msg = '<b>Введите название портфеля:</b>'
+			msg = '<b>Введите id портфеля:</b>'
 			if getUserStat(message.from_user.id)[5] == 'en':
-				msg = "<b>Enter the portfolio name:</b>"
+				msg = "<b>Enter the portfolio id:</b>"
 
 			await bot.send_message(message.from_user.id, msg)
 			await updateCase.name.set()
 		elif arg == 'clear' or arg == 'delete' or arg == 'remove':
-			msg = '<b>Введите название портфеля:</b>'
+			msg = '<b>Введите id портфеля:</b>'
 			if getUserStat(message.from_user.id)[5] == 'en':
-				msg = "<b>Enter the portfolio name:</b>"
+				msg = "<b>Enter the portfolio id:</b>"
 
 			await bot.send_message(message.from_user.id, msg)
 			await deleteCase.name.set()
@@ -83,42 +83,45 @@ async def getCase(message, bot, dp):
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
 			if len(filenames):
-				data, msg = [], '<b>📕Ваш портфель:</b>\n\n'
+				if len(filenames) <= 5:
+					data, msg = [], '<b>📕Ваш портфель:</b>\n\n'
 
-				if getUserStat(message.from_user.id)[5] == 'en':
-					msg = '<b>📕Status of your portfolio:</b>\n\n'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = '<b>📕Status of your portfolio:</b>\n\n'
 
-				for path in filenames:
-					with open(f'allcases/{message.from_user.id}/{path}') as f:
-						tmp = [path[:-4], f.readlines()]
-						data.append(tmp)
+					for path in filenames:
+						with open(f'allcases/{message.from_user.id}/{path}') as f:
+							tmp = [path[:-4], f.readlines()]
+							data.append(tmp)
 
-				for info in data:
-					values = []
-					msg += f'<b>{info[0]}:</b>\n'
+					for info in data:
+						values = []
+						msg += f'<b>{info[0]}. {info[1][0]}</b>\n'
 
-					for i in info[1]:
-						i = i.replace('\n', '')
-						values.append(list(i.split(' ')))
-					for i in values:
-						price = checkPrice(i[0])
+						for i in info[1]:
+							i = i.replace('\n', '')
+							values.append(list(i.split(' ')))
+						for i in values:
+							price = checkPrice(i[0])
 
-						if price != 'Error':
-							msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> ${price}\n<b>📉24h:</b> {None}%\n<b>💳Hold:</b> {i[2]} (${round(float(i[2]) * price, 3)})\n<b>⚖️AvgBuy:</b> ${i[1]}\n<b>📈P&L:</b> ${round(price - float(i[1]), 3)} ({None}%)\n\n'
-						else:
-							if getUserStat(message.from_user.id)[5] == 'en':
-								msg += f'<i>{i[0]}</i>\n<b>This coin is not found on binance!</b>\n\n'
-							else:
-								msg += f'<i>{i[0]}</i>\n<b>Такого койна нет на бинансе!</b>\n\n'
-					msg += '\n'
-				msg += '\n<code>/case help</code>'
+							if price != 'Error':
+								msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> ${price}\n<b>📉24h:</b> {None}%\n<b>💳Hold:</b> {i[2]} (${round(float(i[2]) * price, 3)})\n<b>⚖️AvgBuy:</b> ${i[1]}\n<b>📈P&L:</b> ${round(price - float(i[1]), 3)} ({None}%)\n\n'
 
-				await bot.send_message(message.from_user.id, msg)
+					msg += '\n<code>/case help</code>'
+
+					await bot.send_message(message.from_user.id, msg)
+				else:
+					msg = '<b>Превышен лимит на количество портфелей!</b>'
+					if getUserStat(message.from_user.id)[5] == 'en':
+						msg = '<b>Portfolio limit exceeded!</b>'
+
+					await bot.send_message(message.from_user.id, msg)
 			else:
 				msg = '<b>Портфель еще не создан!</b>\n\n<b>Введите:</b> <code>/case create</code>\n\n<i>Нажмите, чтобы скопировать.</i>'
 				if getUserStat(message.from_user.id)[5] == 'en':
 					msg = '<b>The portfolio has not been created yet!</b>\n\n<b>Enter:</b> <code>/case create</code>\n\n<i>Click to copy.</i>'
 
+				updateUportid(message.from_user.id, 0)
 				await bot.send_message(message.from_user.id, msg)
 
 
@@ -605,15 +608,6 @@ def bot_start():
 
 		filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
-		for name in filenames:
-			if message.text.lower() == name[:-4].lower():
-				msg = '<b>Такая категория уже существует!</b>'
-				if getUserStat(message.from_user.id)[5] == 'en':
-					msg = '<b>This category already exists!</b>'
-
-				await message.answer(msg)
-				return
-
 		async with state.proxy() as data:
 			data['name'] = message.text
 
@@ -684,14 +678,15 @@ def bot_start():
 				async with state.proxy() as data:
 					data['volume'] = message.text
 
-				with open(f'allcases/{message.from_user.id}/{data["name"]}.txt', 'w') as f:
-					f.write(f'{data["coin"]} {data["price"]} {data["volume"]}')
+				with open(f'allcases/{message.from_user.id}/{getUserStat(message.from_user.id)[13]}.txt', 'w') as f:
+					f.write(f'{data["name"]}\n{data["coin"]} {data["price"]} {data["volume"]}')
 
-				msg = f'<b>Ваш портфель ({data["name"]}) успешно создан!</b>'
+				msg = f'<b>Ваш портфель (id: {data["name"]}) успешно создан!</b>'
 				if getUserStat(message.from_user.id)[5] == 'en':
-					msg = f'<b>Your portfolio ({data["name"]}) has been successfully created!</b>'
+					msg = f'<b>Your portfolio (id: {data["name"]}) has been successfully created!</b>'
 
 				await bot.send_message(message.from_user.id, msg)
+				updateUportid(message.from_user.id, int(getUserStat(message.from_user.id)[13]) + 1)
 				await state.finish()
 
 
@@ -701,17 +696,17 @@ def bot_start():
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
 			if f'{message.text}.txt' not in filenames:
-				msg = '<b>Такая категория не существует!</b>'
+				msg = '<b>Такого id не существует!</b>'
 				if getUserStat(message.from_user.id)[5] == 'en':
-					msg = '<b>There is no such category!</b>'
+					msg = '<b>There is no such id!</b>'
 
 				await message.answer(msg)
 			else:
 				os.remove(f'allcases/{message.from_user.id}/{message.text}.txt')
 
-				msg = f'<b>Ваш портфель ({message.text}) удален!</b>'
+				msg = f'<b>Ваш портфель (id: {message.text}) удален!</b>'
 				if getUserStat(message.from_user.id)[5] == 'en':
-					msg = f'<b>Your portfolio ({message.text}) has been deleted!</b>'
+					msg = f'<b>Your portfolio (id: {message.text}) has been deleted!</b>'
 
 				await bot.send_message(message.from_user.id, msg)
 			await state.finish()
@@ -722,9 +717,9 @@ def bot_start():
 		filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
 		if f'{message.text}.txt' not in filenames:
-			msg = '<b>Такая категория не существует!</b>'
+			msg = '<b>Такого id не существует!</b>'
 			if getUserStat(message.from_user.id)[5] == 'en':
-				msg = '<b>There is no such category!</b>'
+				msg = '<b>There is no such id!</b>'
 
 			await message.answer(msg)
 			await state.finish()
@@ -798,15 +793,15 @@ def bot_start():
 			else:
 				old_data = None
 
-				with open(f'allcases/{message.from_user.id}/{data["name"]}.txt', 'r') as f:
+				with open(f'allcases/{message.from_user.id}/{getUserStat(message.from_user.id)[13]}.txt', 'r') as f:
 					old_data = f.read()
 
-				with open(f'allcases/{message.from_user.id}/{data["name"]}.txt', 'w') as f:
+				with open(f'allcases/{message.from_user.id}/{getUserStat(message.from_user.id)[13]}.txt', 'w') as f:
 					f.write(f'{old_data}\n{data["coin"]} {data["price"]} {message.text}')
 
-				msg = f'<b>Ваш портфель ({data["name"]}) успешно обновлен!</b>'
+				msg = f'<b>Ваш портфель (id: {data["name"]}) успешно обновлен!</b>'
 				if getUserStat(message.from_user.id)[5] == 'en':
-					msg = f'<b>Your portfolio ({data["name"]}) has been successfully updated!</b>'
+					msg = f'<b>Your portfolio (id: {data["name"]}) has been successfully updated!</b>'
 
 				await bot.send_message(message.from_user.id, msg)
 				await state.finish()
@@ -958,7 +953,6 @@ def bot_start():
 				msg = '<b>Algorithm has been started!</b>'
 
 			await bot.send_message(callback_query.from_user.id, msg)
-			await bot.send_message(logs_chat_id, f'<b>Пользователь {callback_query.from_user.username} запустил алгоритм</b>\n\n<i>Id: {callback_query.from_user.id}</i>')
 		else:
 			msg = '<b>Алгоритм уже запущен!</b>'
 			if getUserStat(callback_query.from_user.id)[5] == 'en':
@@ -977,7 +971,6 @@ def bot_start():
 				msg = '<b>Algorithm has been disabled!</b>'
 
 			await bot.send_message(callback_query.from_user.id, msg)
-			await bot.send_message(logs_chat_id, f'<b>Пользователь {callback_query.from_user.username} отключил алгоритм</b>\n\n<i>Id: {callback_query.from_user.id}</i>')
 		else:
 			msg = '<b>Алгоритм уже отключен!</b>'
 			if getUserStat(callback_query.from_user.id)[5] == 'en':
@@ -1119,7 +1112,6 @@ def bot_start():
 							msg = '<b>Algorithm has been started!</b>'
 
 						await bot.send_message(message.from_user.id, msg)
-						await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} запустил алгоритм</b>\n\n<i>Id: {message.from_user.id}</i>')
 					else:
 						msg = '<b>Алгоритм уже запущен!</b>'
 						if getUserStat(message.from_user.id)[5] == 'en':
@@ -1148,7 +1140,6 @@ def bot_start():
 							msg = '<b>Algorithm has been disabled!</b>'
 
 						await bot.send_message(message.from_user.id, msg)
-						await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} отключил алгоритм</b>\n\n<i>Id: {message.from_user.id}</i>')
 					else:
 						msg = '<b>Алгоритм уже отключен!</b>'
 						if getUserStat(message.from_user.id)[5] == 'en':

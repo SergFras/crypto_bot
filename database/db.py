@@ -94,8 +94,9 @@ def getUserStat(uid):
 		u5m = user[10]
 		u15m = user[11]
 		u30m = user[12]
+		uportid = user[13]
 
-		return (uid, uname, uregdate, udefwork, uadmin, ulang, uprocent, uinterval, upid, u1m, u5m, u15m, u30m)
+		return (uid, uname, uregdate, udefwork, uadmin, ulang, uprocent, uinterval, upid, u1m, u5m, u15m, u30m, uportid)
 
 
 def getTfPidsStat():
@@ -139,6 +140,19 @@ def updateUpid(uid, upid):
 		return None
 	else:
 		con.execute(f"UPDATE USERS SET upid = {upid} WHERE uid = {uid}")
+		con.commit()
+		con.close()
+
+
+def updateUportid(uid, uportid):
+	con = sl.connect(path)
+	user = con.execute(f'SELECT * FROM USERS WHERE uid = {uid}').fetchone()
+
+	if user is None:
+		con.close()
+		return None
+	else:
+		con.execute(f"UPDATE USERS SET uportid = ? WHERE uid = ?", (uportid, uid))
 		con.commit()
 		con.close()
 

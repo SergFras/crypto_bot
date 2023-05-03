@@ -62,6 +62,8 @@ async def getCase(message, bot, dp):
 		elif arg == 'update':
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 			msg = '<b>Текущие id портфелей:</b>\n\n'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>Current portfolio ids:</b>\n\n'
 
 			for path in filenames:
 				msg += f'<code>{path[:-4]}</code>\n'
@@ -78,6 +80,8 @@ async def getCase(message, bot, dp):
 		elif arg == 'clear' or arg == 'delete' or arg == 'remove':
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 			msg = '<b>Текущие id портфелей:</b>\n\n'
+			if getUserStat(message.from_user.id)[5] == 'en':
+				msg = '<b>Current portfolio ids:</b>\n\n'
 
 			for path in filenames:
 				msg += f'<code>{path[:-4]}</code>\n'
@@ -99,6 +103,7 @@ async def getCase(message, bot, dp):
 			await bot.send_message(message.from_user.id, msg)
 		else:
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
+			filenames = list(reversed(filenames))
 
 			if len(filenames):
 				if len(filenames) <= 5:
@@ -125,6 +130,7 @@ async def getCase(message, bot, dp):
 							if price != 'Error':
 								msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> ${price}\n<b>📉24h:</b> {None}%\n<b>💳Hold:</b> {i[2]} (${round(float(i[2]) * price, 3)})\n<b>⚖️AvgBuy:</b> ${i[1]}\n<b>📈P&L:</b> ${round(price - float(i[1]), 3)} ({None}%)\n\n'
 
+						msg += '\n'
 					msg += '\n<code>/case help</code>'
 
 					await bot.send_message(message.from_user.id, msg)

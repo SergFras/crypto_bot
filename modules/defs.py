@@ -89,7 +89,7 @@ def defStarting(uprocent, file_name):
 				tmp = check_procent_stat(round(((abs(round(old[i] - new[i], 4))*100)/old[i]), 1), 'up')
 				tmp2 = '+'
 
-			res.append(f'{tmp}<a href="https://www.binance.com/en/trade/{binance_coins[i][:-4]}_BUSD">{binance_coins[i][:-4]}</a> {tmp2}{round(((abs(round(old[i] - new[i], 4))*100)/old[i]), 2)}% / <b>Цена:</b> {new[i]}\n')
+			res.append(f'{tmp}<a href="https://www.binance.com/en/trade/{binance_coins[i][:-4]}_BUSD">{binance_coins[i][:-4]}</a> {tmp2}{round(((abs(round(old[i] - new[i], 4))*100)/old[i]), 2)}% / <b>Price:</b> {new[i]}\n')
 
 	with open(f'{path_coins}{file_name}', 'w', encoding='utf-8') as file:
 		for i in range(len(new)):

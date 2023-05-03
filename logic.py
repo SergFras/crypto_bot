@@ -30,11 +30,11 @@ def send_bot(uid):
 		for i in range(len(res)):
 			msg += str(res[i])
 
-		if getUserStat(message.from_user.id)[5] == 'en':
+		if getUserStat(uid)[5] == 'en':
 			msg += f'\n\n<i>Interval: {uhour} hour</i>'
 		else:
 			msg += f'\n\n<i>Интервал: {uhour} ч</i>'
-			
+
 		bot.send_message(uid, msg, disable_web_page_preview=True, parse_mode='html')
 
 	print(f'\nLogic for {uid} has been completed!\n')

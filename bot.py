@@ -53,12 +53,21 @@ async def getCase(message, bot, dp):
 			os.mkdir(f'allcases/{message.from_user.id}/')
 
 		if arg == 'create':
-			msg = '<b>Введите название портфеля:</b>'
-			if getUserStat(message.from_user.id)[5] == 'en':
-				msg = "<b>Enter the portfolio name:</b>"
+			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
-			await bot.send_message(message.from_user.id, msg)
-			await createCase.name.set()
+			if len(filenames) < 5:
+				msg = '<b>Введите название портфеля:</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = "<b>Enter the portfolio name:</b>"
+
+				await bot.send_message(message.from_user.id, msg)
+				await createCase.name.set()
+			else:
+				msg = '<b>Превышен лимит на количество портфелей!</b>'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>Portfolio limit exceeded!</b>'
+
+				await bot.send_message(message.from_user.id, msg)
 		elif arg == 'update':
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 			msg = '<b>Текущие id портфелей:</b>\n\n'
@@ -106,40 +115,33 @@ async def getCase(message, bot, dp):
 			filenames = list(reversed(filenames))
 
 			if len(filenames):
-				if len(filenames) <= 5:
-					data, msg = [], '<b>📕Ваш портфель:</b>\n\n'
+				data, msg = [], '<b>📕Ваш портфель:</b>\n\n'
 
-					if getUserStat(message.from_user.id)[5] == 'en':
-						msg = '<b>📕Status of your portfolio:</b>\n\n'
+				if getUserStat(message.from_user.id)[5] == 'en':
+					msg = '<b>📕Status of your portfolio:</b>\n\n'
 
-					for path in filenames:
-						with open(f'allcases/{message.from_user.id}/{path}') as f:
-							tmp = [path[:-4], f.readlines()]
-							data.append(tmp)
+				for path in filenames:
+					with open(f'allcases/{message.from_user.id}/{path}') as f:
+						tmp = [path[:-4], f.readlines()]
+						data.append(tmp)
 
-					for info in data:
-						values = []
-						msg += f'<b>{info[0]}. {info[1][0]}</b>\n'
+				for info in data:
+					values = []
+					msg += f'<b>{info[0]}. {info[1][0]}</b>\n'
 
-						for i in info[1]:
-							i = i.replace('\n', '')
-							values.append(list(i.split(' ')))
-						for i in values:
-							price = checkPrice(i[0])
+					for i in info[1]:
+						i = i.replace('\n', '')
+						values.append(list(i.split(' ')))
+					for i in values:
+						price = checkPrice(i[0])
 
-							if price != 'Error':
-								msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> ${price}\n<b>📉24h:</b> {None}%\n<b>💳Hold:</b> {i[2]} (${round(float(i[2]) * price, 3)})\n<b>⚖️AvgBuy:</b> ${i[1]}\n<b>📈P&L:</b> ${round(price - float(i[1]), 3)} ({None}%)\n\n'
+						if price != 'Error':
+							msg += f'<i>{i[0]}</i>\n<b>📊Price:</b> ${price}\n<b>📉24h:</b> {None}%\n<b>💳Hold:</b> {i[2]} (${round(float(i[2]) * price, 3)})\n<b>⚖️AvgBuy:</b> ${i[1]}\n<b>📈P&L:</b> ${round(price - float(i[1]), 3)} ({None}%)\n\n'
 
-						msg += '\n'
-					msg += '\n<code>/case help</code>'
+					msg += '\n'
+				msg += '\n<code>/case help</code>'
 
-					await bot.send_message(message.from_user.id, msg)
-				else:
-					msg = '<b>Превышен лимит на количество портфелей!</b>'
-					if getUserStat(message.from_user.id)[5] == 'en':
-						msg = '<b>Portfolio limit exceeded!</b>'
-
-					await bot.send_message(message.from_user.id, msg)
+				await bot.send_message(message.from_user.id, msg)
 			else:
 				msg = '<b>Портфель еще не создан!</b>\n\n<b>Введите:</b> <code>/case create</code>\n\n<i>Нажмите, чтобы скопировать.</i>'
 				if getUserStat(message.from_user.id)[5] == 'en':

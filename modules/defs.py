@@ -179,7 +179,7 @@ async def getVol(message, bot, dp):
 
 			if close_price != 0:
 				# vol = (open_price/close_price - 1) * 100
-				vol = ((open_price - close_price)/close_price) * 100
+				vol = ((open_price - close_price) / close_price) * 100
 			else:
 				vol = 0.1
 

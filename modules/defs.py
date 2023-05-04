@@ -190,27 +190,29 @@ async def getVol(message, bot, dp):
 		vols_min = []
 
 		if getUserStat(message.from_user.id)[5] == 'en':
-			msg += f'<b>Top 15 most volatile coins:</b>\n'
+			msg += f'<b>Top most volatile coins:</b>\n'
 		else:
-			msg += f'<b>Топ 15 самых волатильных монет:</b>\n'
+			msg += f'<b>Топ самых волатильных монет:</b>\n'
 
 		temp, temp2 = [], []
 
-		for i in range(15):
+		for i in range(25):
 			coin_price = round(float(ticker_df.loc[vols_max[i][0]]["quoteVolume"]))
 
-			if coin_price >= 1000000:
-				coin_price = f'{round(coin_price/1000000, 2)}M'
-				temp2.append(coin_price)
-			else:
-				coin_price = f'{round(coin_price/1000)}K'
-				temp2.append(coin_price)
+			if float(vols_max[i][1]) > 1:
+				if coin_price >= 1000000:
+					coin_price = f'{round(coin_price/1000000, 2)}M'
+					temp2.append(coin_price)
+				else:
+					coin_price = f'{round(coin_price/1000)}K'
+					temp2.append(coin_price)
 
-			temp.append(f'<code>{vols_max[i][0][:-4]}: {vols_max[i][1]}%</code>')
-			# msg += f'<a href="https://www.binance.com/en/trade/{vols_max[i][0][:-4]}_BUSD">{vols_max[i][0][:-4]}</a>  <code>{vols_max[i][1]}% 24h vol ${coin_price}</code>\n'
+				temp.append(f'<code>{vols_max[i][0][:-4]}: {vols_max[i][1]}%</code>')
+				# msg += f'<a href="https://www.binance.com/en/trade/{vols_max[i][0][:-4]}_BUSD">{vols_max[i][0][:-4]}</a>  <code>{vols_max[i][1]}% 24h vol ${coin_price}</code>\n'
 
 		for i in range(len(temp)):
-			msg += f'<code>{spaces(temp, temp[i])}   vol: {temp2[i]}</code>\n'
+			if float(temp2[i][:-1]) > 0:
+				msg += f'<code>{spaces(temp, temp[i])}   vol: {temp2[i]}</code>\n'
 
 		if getUserStat(message.from_user.id)[5] == 'en':
 			msg += f'\n\n<i>All information is taken for the 24 hour range!\nDate: {str(datetime.datetime.now())[:-10]}</i>'

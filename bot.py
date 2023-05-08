@@ -55,7 +55,7 @@ async def getCase(message, bot, dp):
 		if arg == 'create':
 			filenames = next(os.walk(f'allcases/{message.from_user.id}/'), (None, None, []))[2]
 
-			if len(filenames) < 5:
+			if len(filenames) < 4:
 				msg = '<b>Введите название портфеля:</b>'
 				if getUserStat(message.from_user.id)[5] == 'en':
 					msg = "<b>Enter the portfolio name:</b>"
@@ -1055,29 +1055,7 @@ def bot_start():
 				await message.reply(msg)
 				await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 			else:
-				msg = '<b>Вы можете включить/выключить рассылку уведомлений по отклонениям\nВыберите готовый интервал, либо создайте свой:</b>\n\n<i>Полная инструкция -></i> @crypto_bot_help'
-
-				if getUserStat(message.from_user.id)[5] == 'en':
-					key = types.InlineKeyboardButton('1 minute', callback_data='u1m')
-					key2 = types.InlineKeyboardButton('5 minutes', callback_data='u5m')
-					key3 = types.InlineKeyboardButton('15 minutes', callback_data='u15m')
-					key4 = types.InlineKeyboardButton('30 minutes', callback_data='u30m')
-					key5 = types.InlineKeyboardButton('Enable all', callback_data='uallm')
-					key6 = types.InlineKeyboardButton('Create own', callback_data='upersm')
-					key7 = types.InlineKeyboardButton('Disable all', callback_data='uoffsm')
-					msg = '<b>You can enable/disable sending notifications on deviations\nChoose a ready-made interval, or create your own:</b>\n\n<i>Full instruction -></i> @crypto_bot_help'
-				else:
-					key = types.InlineKeyboardButton('1 минута', callback_data='u1m')
-					key2 = types.InlineKeyboardButton('5 минут', callback_data='u5m')
-					key3 = types.InlineKeyboardButton('15 минут', callback_data='u15m')
-					key4 = types.InlineKeyboardButton('30 минут', callback_data='u30m')
-					key5 = types.InlineKeyboardButton('Включить все', callback_data='uallm')
-					key6 = types.InlineKeyboardButton('Создать', callback_data='upersm')
-					key7 = types.InlineKeyboardButton('Отключить все', callback_data='uoffsm')
-
-				keyboard = types.InlineKeyboardMarkup().add(key, key2, key3, key4, key5, key6, key7)
-
-				await bot.send_message(message.from_user.id, msg, reply_markup=keyboard)
+				await getHelp(message, bot)
 		else:
 			await bot.send_message(message.from_user.id, '@crypto_bot_help')
 
@@ -1120,6 +1098,7 @@ def bot_start():
 		if getUserStat(message.from_user.id) is not None:
 			msg = message.text.lower()
 
+
 			if msg == 'on' or msg == 'вкл':
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
@@ -1147,6 +1126,7 @@ def bot_start():
 							msg = '<b>The algorithm is already running!</b>'
 
 						await bot.send_message(message.from_user.id, msg)
+
 
 			if msg == 'off' or msg == 'выкл':
 				try:
@@ -1176,6 +1156,7 @@ def bot_start():
 
 						await bot.send_message(message.from_user.id, msg)
 
+
 			if msg == 'койны' or msg == 'койн' or msg == 'coins' or msg == 'coin' or msg == 'coins💰' or msg == 'binance':
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
@@ -1188,6 +1169,7 @@ def bot_start():
 					await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 				else:
 					await getCoins(message, bot, 'binance')
+
 
 			if msg == 'bybit_test':
 				try:
@@ -1202,6 +1184,7 @@ def bot_start():
 				else:
 					await getCoins(message, bot, 'bybit')
 
+
 			if msg == 'настройки' or msg == 'options' or msg == 'settings' or msg == 'опции' or msg == 'options⚙️':
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
@@ -1214,6 +1197,7 @@ def bot_start():
 					await bot.send_message(logs_chat_id, f'<b>Пользователь {message.from_user.username} спамит!\n\n{message.text}</b>\n\n<i>Id: {message.from_user.id}</i>')
 				else:
 					await getOptions(message, bot)
+
 
 			if msg == 'инструменты' or msg == 'tools':
 				try:
@@ -1232,6 +1216,7 @@ def bot_start():
 
 					await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'tools'))
 
+
 			if msg == 'алгоритм' or msg == 'logic' or msg == 'algorithm':
 				try:
 					await dp.throttle(message.text, rate=time_for_spam_ban)
@@ -1248,12 +1233,16 @@ def bot_start():
 						msg = '<b>You have moved to the algorithm section!</b>'
 
 					await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'logic'))
+					await getHelp(message, bot)
+
 
 			if msg == 'скам' or msg == 'scam':
 				await getScam(message, bot, dp)
 
-			if msg == 'портфель' or msg == 'case' or msg == 'portfolio':
+
+			if msg == 'портфель' or msg == 'case' or msg == 'portfolio' or msg == '/portfolio':
 				await getCase(message, bot, dp)
+
 
 			if msg == 'меню' or msg == 'menu' or msg == '/меню' or msg == '/menu':
 				try:
@@ -1272,11 +1261,14 @@ def bot_start():
 
 					await bot.send_message(message.from_user.id, msg, reply_markup=getKeyboard(message, 'main'))
 
+
 			if msg == 'профиль' or msg == 'profile':
 				await getProfile(message, bot)
 
-			if msg == 'волатильность' or msg == 'volatility':
+
+			if msg == 'волатильность' or msg == 'volatility' or msg == '/volatility':
 				await getVol(message, bot, dp)
+
 
 			if msg == 'faq':
 				await bot.send_message(message.from_user.id, 'This feature is still in development.', reply_markup=getKeyboard(message, 'main'))
@@ -1288,12 +1280,13 @@ def bot_start():
 	executor.start_polling(dp, skip_updates=True)
 
 
+if __name__ == '__main__':
+	hello()
 
-
-while True:
-	try:
-		print(f'Bot has been started! {str(datetime.datetime.now())[:-10]}\n\n')
-		bot_start()
-	except:
-		print(f'Bot has been restarted! {str(datetime.datetime.now())[:-10]}\n\n')
-		bot_start()
+	while True:
+		try:
+			print(f'Bot has been started! {str(datetime.datetime.now())[:-10]}\n\n')
+			bot_start()
+		except:
+			print(f'Bot has been restarted! {str(datetime.datetime.now())[:-10]}\n\n')
+			bot_start()

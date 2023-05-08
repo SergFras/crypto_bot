@@ -349,7 +349,37 @@ def checkPrice(coin):
 		return 'Error'
 
 
+async def getHelp(message, bot):
+	msg = '<b>Вы можете включить/выключить рассылку уведомлений по отклонениям\nВыберите готовый интервал, либо создайте свой:</b>\n\n<i>Полная инструкция -></i> @crypto_bot_help'
 
+	if getUserStat(message.from_user.id)[5] == 'en':
+		key = types.InlineKeyboardButton('1 minute', callback_data='u1m')
+		key2 = types.InlineKeyboardButton('5 minutes', callback_data='u5m')
+		key3 = types.InlineKeyboardButton('15 minutes', callback_data='u15m')
+		key4 = types.InlineKeyboardButton('30 minutes', callback_data='u30m')
+		key5 = types.InlineKeyboardButton('Enable all', callback_data='uallm')
+		key6 = types.InlineKeyboardButton('Create own', callback_data='upersm')
+		key7 = types.InlineKeyboardButton('Disable all', callback_data='uoffsm')
+		msg = '<b>You can enable/disable sending notifications on deviations\nChoose a ready-made interval, or create your own:</b>\n\n<i>Full instruction -></i> @crypto_bot_help'
+	else:
+		key = types.InlineKeyboardButton('1 минута', callback_data='u1m')
+		key2 = types.InlineKeyboardButton('5 минут', callback_data='u5m')
+		key3 = types.InlineKeyboardButton('15 минут', callback_data='u15m')
+		key4 = types.InlineKeyboardButton('30 минут', callback_data='u30m')
+		key5 = types.InlineKeyboardButton('Включить все', callback_data='uallm')
+		key6 = types.InlineKeyboardButton('Создать', callback_data='upersm')
+		key7 = types.InlineKeyboardButton('Отключить все', callback_data='uoffsm')
+
+	keyboard = types.InlineKeyboardMarkup().add(key, key2, key3, key4, key5, key6, key7)
+
+	await bot.send_message(message.from_user.id, msg, reply_markup=keyboard)
+
+
+
+
+
+def hello():
+	print('\n░██████╗███████╗██████╗░░██████╗░███████╗██████╗░░█████╗░░██████╗\n██╔════╝██╔════╝██╔══██╗██╔════╝░██╔════╝██╔══██╗██╔══██╗██╔════╝\n╚█████╗░█████╗░░██████╔╝██║░░██╗░█████╗░░██████╔╝███████║╚█████╗░\n░╚═══██╗██╔══╝░░██╔══██╗██║░░╚██╗██╔══╝░░██╔══██╗██╔══██║░╚═══██╗\n██████╔╝███████╗██║░░██║╚██████╔╝██║░░░░░██║░░██║██║░░██║██████╔╝\n╚═════╝░╚══════╝╚═╝░░╚═╝░╚═════╝░╚═╝░░░░░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░\n\n')
 # def getKeyboard():
 # 	keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
 # 	keyboard.row('ON✅', 'OFF❌')

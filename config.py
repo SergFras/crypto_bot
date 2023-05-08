@@ -1,4 +1,4 @@
-bot_version = '<b>v.4.2</b>\n\n<code>MACBETH CRYPTO BOT</code>'
+bot_version = '<b>v.4.3</b>\n\n<code>MACBETH CRYPTO BOT</code>'
 # https://t.me/macbeth_crypto_bot
 
 

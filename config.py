@@ -2,12 +2,12 @@ bot_version = '<b>v.4.3</b>\n\n<code>MACBETH CRYPTO BOT</code>'
 # https://t.me/macbeth_crypto_bot
 
 
-telegram_token = '5812953435:AAGv2qPkrpbAHnefWn-eSfbBJ1xKN-rehmw'
-# 6282420047:AAHnHweWAo4t0adcOKkPFaM7S-SKJe5NiDA
-binance_token = 'Wi5Pl9cUXGSqhYiieGrmyc6kAt4gh8SYYRvEOXNdnNpipYwDnTG5B0AZXUJR70yi'
-binance_secret = 'JKHfBqlbFs6RH6Hd06CjBnwEfCyeYpXLElDlMYewd0GQg0PU9LUUTWlCIdQPAprg'
-bybit_token = 'gPTNlbNqvHjI0r2qZP'
-bybit_secret = 'e4AUc50RRCi41KTYh7eQwUmeUw9Vc1Gj9UGY'
+telegram_token = ''
+
+binance_token = ''
+binance_secret = ''
+bybit_token = ''
+bybit_secret = ''
 
 
 owner = 892023960
